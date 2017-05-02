@@ -55,19 +55,22 @@ def find_dependencies():
         j += 1 
 
     print groups
-    print request_types[18]
-    print request_types[19:20]
+
     dependancy_mapping = {}
     for group in groups:
         for i in range(len(group)-1):
             if not responses[group[i]] == responses[group[i+1]]:
                 start = group[i]+1
                 end   = group[i+1]
-                print group
-                print str(start) + ' ' + str(end)
-                print tuple(request_types[start:end])
-                print request_types[group[i]]
+                # print group
+                # print str(start) + ' ' + str(end)
+                # print tuple(request_types[start:end])
+                # print request_types[group[i]]
                 dependancy_mapping[tuple(request_types[start:end])] = request_types[group[i]]
 
     for key in dependancy_mapping:
         print str(key) + ' affects ' + str(dependancy_mapping[key])
+
+
+if __name__ == "__main__":
+    find_dependencies()
