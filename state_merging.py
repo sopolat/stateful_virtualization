@@ -77,7 +77,7 @@ def merge_nodes(i,j,node_list,edge_list):
     return edge_list
 
 
-f = open('traces','rb')
+f = open('thy_traces','rb')
 data = json.load(f)
 
 requests = data['requests']

@@ -1,6 +1,12 @@
 from sklearn.neural_network import MLPClassifier
+from Bio import pairwise2
+import re
 
 BACKWARD_BOUND = 3
+GAP_OPENING    = -15;
+GAP_EXTENSION  = -5;
+MATCH          = 5
+MISMATCH       = -1;
 
 def extract_data_points():
 
@@ -31,7 +37,7 @@ def extract_data_points():
     groups = []
     j = 0
     for request in requests:
-        print str(j) + ' -- ' + str(request)
+        # print str(j) + ' -- ' + str(request)
         #Finds the indices of the each type of request
         indices = [i for i, x in enumerate(requests) if x == request and i not in used]
 
@@ -40,12 +46,9 @@ def extract_data_points():
         used += indices
         j += 1 
 
-    print groups
-
     unique_request_types = list(set(request_types))
     n_request_types = len(unique_request_types)
 
-    print unique_request_types
 
     request_to_datapoints = {}
     request_to_class_tags = {}
@@ -66,6 +69,21 @@ def extract_data_points():
                 class_tags.append(0)
             elif not responses[group[i]] == responses[group[i-1]]:
                 class_tags.append(1)
+                alignment = pairwise2.align.globalms(responses[group[i]][20500:], responses[group[i-1]][20500:], MATCH, MISMATCH, GAP_OPENING, GAP_EXTENSION)[159]
+                
+                match_gap = r'(\-+)'
+                match_iter = re.finditer(match_gap, alignment[0])
+                print alignment[0]
+                print alignment[1]
+                print ""
+                for matchObj in match_iter:
+                    print alignment[0][matchObj.start():matchObj.end()]
+                
+                match_iter = re.finditer(match_gap, alignment[1])
+                
+                for matchObj in match_iter:
+                    print alignment[1][matchObj.start():matchObj.end()]
+                return
             else:
                 class_tags.append(0)
             
@@ -73,9 +91,10 @@ def extract_data_points():
         request_to_datapoints[request_types[group[0]]] = datapoints
         request_to_class_tags[request_types[group[0]]] = class_tags
 
-
+    print '***********************'
     for key in request_to_datapoints:
         print key + ' --- ' + str(request_to_datapoints[key]) + ' --- ' + str(request_to_class_tags[key])
+
 
 def learn_dependency_nn(X, y):
     # X = [[0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
