@@ -7,7 +7,7 @@ def parse_thy():
     traces['requests'] = []
     traces['responses'] = []
     
-    root = xml.etree.ElementTree.parse('thy_data.xml').getroot()
+    root = xml.etree.ElementTree.parse('web3-1000.xml').getroot()
 
     for child in root[:100]:
         row = child[2].text
