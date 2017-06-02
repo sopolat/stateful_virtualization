@@ -1,18 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 27 10:27:15 2017
-
-@author: suleyman
-"""
 
 import graphviz as gv
-
 import json
-
 import functools
-
-
 
 
 
