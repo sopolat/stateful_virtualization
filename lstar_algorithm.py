@@ -43,12 +43,10 @@ def graph_contains(edges, e):
     return False
 
 
-def progressive_learn(data):
+def progressive_learn(requests_list, responses_list):
     '''
     Implements progressive learning algorithm.
     '''
-    requests_list  = data['requests']
-    responses_list = data['responses']
 
     traces = zip(requests_list, responses_list)
 
@@ -114,10 +112,14 @@ def lstar_main():
     
     digraph = functools.partial(gv.Digraph, format='png')
 
-    traces = open('traces','rb')
-    data = json.load(traces)
+    # traces = open('traces','rb')
+    # data = json.load(traces)
+    # requests_list  = data['requests']
+    # responses_list = data['responses']
 
-    edges = progressive_learn(data)
+    requests_list, responses_list = parse_service_traces()
+
+    edges = progressive_learn(requests_list, responses_list)
 
     edge_list = []
     node_list = []    
@@ -140,8 +142,39 @@ def lstar_main():
     )
     graph.render('img/lstar') 
 
-
     return True
+
+def parse_service_traces():
+    service_traces = open('clear_service_traces', 'r')
+
+    request_types = []
+    request_datas = []
+    requests = []
+    responses = []
+
+    cnt = 1
+    response_enum_dict = {}
+    while True:
+        request_type = service_traces.readline()
+        request_data = service_traces.readline()
+        response = service_traces.readline()
+
+        if not request_type or not request_data or not response: break 
+        
+        # if request_type not in request_types:
+        request_types.append(request_type)
+        request_datas.append(request_data)
+        requests.append(request_type)
+
+        if response_enum_dict.get(response,0) == 0:
+            response_enum_dict[response] = cnt 
+            cnt += 1
+
+        responses.append(str(response_enum_dict[response]))
+
+        print responses
+
+    return [requests], [responses]
 
 if __name__ == "__main__":
     lstar_main()
