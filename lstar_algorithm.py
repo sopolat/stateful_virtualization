@@ -25,7 +25,7 @@ def check_nondeterminisim(edges, e):
             print edge.name + ' ' + e.name
             print edge.source + ' ' + e.source
             print edge.dest + ' ' + e.dest
-            print str(edge.previous) + ' ' + str(e.previous)
+            print str(edges[edge.previous].name) + ' ' + str(edges[e.previous].name)
             print '---------' 
             return True
 
@@ -40,9 +40,10 @@ def graph_contains(edges, e):
     for edge in edges:
         if edge.name == e.name and edge.source == e.source and \
             edge.dest == e.dest:
-            return True
 
-    return False
+            return edge.id
+
+    return -1
 
 
 def progressive_learn(requests_list, responses_list):
@@ -51,14 +52,19 @@ def progressive_learn(requests_list, responses_list):
     '''
 
 
-    traces = zip(requests_list[:8], responses_list[:8])
+    traces = zip(requests_list[:30], responses_list[:30])
 
     id = 0
+    skipId = -1
     edges = []
     for requests, responses in traces:
         for i in range(len(requests)):
 
-            previous = id-1
+            previous = id - 1
+
+            if skipId != -1:
+                previous = skipId
+                skipId = -1
 
             if i != 0:
                 e = Edge(
@@ -66,22 +72,34 @@ def progressive_learn(requests_list, responses_list):
             else:
                 e = Edge(id, requests[i], responses[i])
 
-            if graph_contains(edges, e):
-                continue
-
             while check_nondeterminisim(edges, e):
+                all_destinations = []
                 for edge in edges:
                     if e.previous == edge.id:
                         previous_edge = edge
-                        break
+
+                    all_destinations.append(edge.dest)
 
                 new_dest_node = previous_edge.dest + '\''
+
+                while new_dest_node in all_destinations:
+                    new_dest_node += '\''
+
+                id += 1
                 e.source = new_dest_node
-                previous_edge.dest = new_dest_node
+                e.previous = id
+
+                new_edge = Edge(id , previous_edge.name, new_dest_node, 
+                         previous_edge.source, previous_edge.previous)
+
                 edges.append(e)
-                e = previous_edge
-                # e = Edge(id+1, previous_edge.name, new_dest_node, 
-                #          previous_edge.source, previous_edge.previous)
+
+                e = new_edge
+
+            if graph_contains(edges, e) != -1:
+                skipId = graph_contains(edges, e)
+                continue
+
 
             id += 1
             edges.append(e)
