@@ -9,7 +9,7 @@ def parse_thy():
     traces['requests'] = []
     traces['responses'] = []
     
-    root = xml.etree.ElementTree.parse('web3-1000.xml').getroot()
+    root = xml.etree.ElementTree.parse('createProfile_30_seasion_getFlightDetails_17_trace.xml').getroot()
 
     for child in root[:1000]:
         row = child[2].text
@@ -22,7 +22,10 @@ def parse_thy():
                 continue
             response_split = request_split.split('<-')
             request_data = response_split[0]
-            response_data = response_split[1]
+            if(len(response_split)==1):
+                response_data = "No Response"
+            else:
+                response_data = response_split[1]
             request = request_data.split('\n')[1]
             response = ''.join(response_data.split('\n')[1:])
 
@@ -37,7 +40,7 @@ def parse_thy():
     #         print r
 
     trace_file = open('thy_traces','w')
-    trace_file.write(str(traces))
+    trace_file.write(str(traces).replace('\'','\"'))
     trace_file.close()
 
     return
@@ -57,12 +60,12 @@ def find_differences():
                 req_to_res[request.strip()].append(responses_list[i][j].strip())
 
 
-    print len(req_to_res)
+    print (len(req_to_res))
 
     i = 0
     for key in req_to_res:
         if len(req_to_res[key]) > 3: 
-            print key + ' --- ' + str(req_to_res[key])
+            print (key + ' --- ' + str(req_to_res[key]))
             i += 1
 
         if i == 10:
@@ -70,4 +73,4 @@ def find_differences():
 
 
 if __name__ == "__main__":
-    find_differences()
+    parse_thy()
