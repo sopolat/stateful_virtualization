@@ -18,6 +18,8 @@ def check_nondeterminisim(edges, e):
     Checks if this edge applies nondeterminism.
     '''
     for edge in edges:
+        if e.source == 'init':
+            continue
         if edge.name == e.name and edge.source == e.source and \
            edge.dest != e.dest:
             print edge.name + ' ' + e.name
@@ -48,7 +50,8 @@ def progressive_learn(requests_list, responses_list):
     Implements progressive learning algorithm.
     '''
 
-    traces = zip(requests_list, responses_list)
+
+    traces = zip(requests_list[:8], responses_list[:8])
 
     id = 0
     edges = []
@@ -112,12 +115,14 @@ def lstar_main():
     
     digraph = functools.partial(gv.Digraph, format='png')
 
-    # traces = open('traces','rb')
-    # data = json.load(traces)
-    # requests_list  = data['requests']
-    # responses_list = data['responses']
+    traces = open('thy_31_traces','rb')
+    data = json.load(traces)
+    requests_list  = data['requests']
+    responses_list = data['responses']
 
-    requests_list, responses_list = parse_service_traces()
+    # requests_list, responses_list = parse_service_traces()
+
+    responses_list = response_enumeration(responses_list)
 
     edges = progressive_learn(requests_list, responses_list)
 
@@ -175,6 +180,27 @@ def parse_service_traces():
         print responses
 
     return [requests], [responses]
+
+def response_enumeration(responses_list):
+
+    cnt = 1
+    response_enum_dict = {}
+    enumerated_responses_list = []
+    for responses in responses_list:
+
+        enumerated_responses = []
+
+        for response in responses:
+            if response_enum_dict.get(response,0) == 0:
+                response_enum_dict[response] = cnt 
+                cnt += 1
+
+            enumerated_responses.append(str(response_enum_dict[response]))
+
+        enumerated_responses_list.append(enumerated_responses)
+    
+    return enumerated_responses_list
+
 
 if __name__ == "__main__":
     lstar_main()
