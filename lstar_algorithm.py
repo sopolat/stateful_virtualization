@@ -12,6 +12,41 @@ class Edge(object):
         self.dest = dest
         self.previous = previous
 
+def get_edge(edges, id):
+    '''
+    Returns the edge of given id
+    '''
+    for edge in edges:
+        if edge.id == id:
+            break
+
+    return edge
+
+def check_history(edges, edge1, edge2):
+    '''
+    If the history of the two edges are the same returns True. Otherwise returns False
+    '''
+
+    history1 = ""
+    while edge1.source != 'init':
+        history1 += edge1.source.replace('\'', '')
+        edge1 = get_edge(edges, edge1.previous) 
+
+    history2 = ""
+    while edge2.source != 'init':
+        history2 += edge2.source.replace('\'', '')
+        edge2 = get_edge(edges, edge2.previous) 
+
+    print history1
+    print history2
+    print '--------'
+
+    if history1 == history2:
+        return True
+    else:
+        return False
+
+
 #CHECK THIS previousun destinationu da eklenecek conditiona
 def check_nondeterminisim(edges, e):
     '''
@@ -22,11 +57,13 @@ def check_nondeterminisim(edges, e):
             continue
         if edge.name == e.name and edge.source == e.source and \
            edge.dest != e.dest:
-            print edge.name + ' ' + e.name
-            print edge.source + ' ' + e.source
-            print edge.dest + ' ' + e.dest
-            print str(edges[edge.previous].name) + ' ' + str(edges[e.previous].name)
-            print '---------' 
+            # print edge.name + ' ' + e.name
+            # print edge.source + ' ' + e.source
+            # print edge.dest + ' ' + e.dest
+            # print str(edges[edge.previous].name) + ' ' + str(edges[e.previous].name)
+            # print '---------' 
+            if check_history(edges, edge, e):
+                continue
             return True
 
     return False
@@ -35,7 +72,7 @@ def check_nondeterminisim(edges, e):
 #CHECK THIS. ONE CONDITION IS MISSING
 def graph_contains(edges, e):
     '''
-    Checks if this edge already there.
+    Checks if this edge is already there.
     '''
     for edge in edges:
         if edge.name == e.name and edge.source == e.source and \
@@ -50,7 +87,6 @@ def progressive_learn(requests_list, responses_list):
     '''
     Implements progressive learning algorithm.
     '''
-
 
     traces = zip(requests_list[:30], responses_list[:30])
 
@@ -100,7 +136,6 @@ def progressive_learn(requests_list, responses_list):
                 skipId = graph_contains(edges, e)
                 continue
 
-
             id += 1
             edges.append(e)
 
@@ -133,14 +168,14 @@ def lstar_main():
     
     digraph = functools.partial(gv.Digraph, format='png')
 
-    traces = open('thy_31_traces','rb')
-    data = json.load(traces)
-    requests_list  = data['requests']
-    responses_list = data['responses']
+    # traces = open('thy_31_traces','rb')
+    # data = json.load(traces)
+    # requests_list  = data['requests']
+    # responses_list = data['responses']
 
-    # requests_list, responses_list = parse_service_traces()
+    requests_list, responses_list = parse_service_traces()
 
-    responses_list = response_enumeration(responses_list)
+    # responses_list = response_enumeration(responses_list)
 
     edges = progressive_learn(requests_list, responses_list)
 
@@ -159,11 +194,13 @@ def lstar_main():
         label = {'label':label}
         edge_list.append((source_dest, label))
     
+    print node_list
+
     graph = add_edges(
         add_nodes(digraph(), node_list),
         edge_list
     )
-    graph.render('img/lstar') 
+    graph.render('img/lstar_two_traces') 
 
     return True
 
@@ -185,7 +222,7 @@ def parse_service_traces():
         if not request_type or not request_data or not response: break 
         
         # if request_type not in request_types:
-        request_types.append(request_type)
+        request_types.append(request_type.strip())
         request_datas.append(request_data)
         requests.append(request_type)
 
@@ -195,9 +232,10 @@ def parse_service_traces():
 
         responses.append(str(response_enum_dict[response]))
 
-        print responses
+    print responses
+    print request_types
 
-    return [requests], [responses]
+    return [request_types[:15],request_types[15:]], [responses[:15], responses[15:]]
 
 def response_enumeration(responses_list):
 
