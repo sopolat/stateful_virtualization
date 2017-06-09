@@ -29,8 +29,8 @@ for i in range( 100):
     responses.append("OK")
     loginId=idOf
     for j in range(20):
-        func = secure_random.randint(1,101)
-        if func in range(1,6):
+        func = secure_random.randint(1,140)
+        if func in range(0,0):
             #create user
             idOf="".join(secure_random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
             request = "createUser"
@@ -40,47 +40,68 @@ for i in range( 100):
             data["tel"] = ""
             loginTokens[idOf]=data
             response=idOf
-        elif func in range(6,26):
+        elif func in range(1,21):
             #update name
             updateData=names.get_first_name()
             request = "updateName:" + updateData
-            if loginId=="bos":
+            if func%4==0:
                 response="error"
             else:
                 data=loginTokens[loginId]
                 data["name"]=updateData
                 loginTokens[loginId]=data
                 response="OK"
-        elif func in range(26,46):
+        elif func in range(21,41):
             #updateSurname
             updateData= names.get_last_name()
             request = "updateSurname:" + updateData
-            if loginId=="bos":
+            if func%4==0:
                 response="error"
             else:
                 data=loginTokens[loginId]
                 data["surname"]=updateData
                 loginTokens[loginId]=data
                 response="OK"
-        elif func in range(46,66):
+        elif func in range(41,61):
             #updateTel
             updateData="054" + "".join(secure_random.choice(string.digits) for _ in range(8))
             request = "updateTel:" + updateData
-            if loginId=="bos":
+            if func%4==0:
                 response="error"
             else:
                 data=loginTokens[loginId]
                 data["tel"]=updateData
                 loginTokens[loginId]=data
                 response="OK"
-        elif func in range(66,96):
+        elif func in range(61,81):
             #Who
             request = "who"
-            if loginId=="bos":
+            if False:
                 response="error"
             else:
                 response=str(loginTokens[loginId])
-        elif func in range(96,102):
+        elif func in range(81,101):
+            #MyName
+            request = "myName"
+            if False:
+                response="error"
+            else:
+                response=str(loginTokens[loginId]["name"])
+        elif func in range(101,121):
+            #MyTel
+            request = "myTel"
+            if False:
+                response="error"
+            else:
+                response=str(loginTokens[loginId]["tel"])
+        elif func in range(121,141):
+            #MySurname
+            request = "mySurname"
+            if False:
+                response="error"
+            else:
+                response=str(loginTokens[loginId]["surname"])
+        elif func in range(0,0):
             #loginAs
             idOf="".join(secure_random.choice(loginTokens.keys()))
             request = "loginAs:" + idOf
