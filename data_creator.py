@@ -21,7 +21,7 @@ for k in range(5):
         string.ascii_uppercase + string.digits) for _ in range(5))] = data
 reqList = []
 resList = []
-for i in range(100):
+for i in range(1):
     requests = []
     responses = []
     loginId = "bos"
@@ -30,7 +30,7 @@ for i in range(100):
     requests.append("loginAs:" + idOf)
     responses.append("OK")
     loginId = idOf
-    for j in range(20):
+    for j in range(100):
         func = secure_random.randint(1, 140)
         if func in range(0, 0):
             # create user
