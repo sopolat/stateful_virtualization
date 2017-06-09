@@ -168,14 +168,14 @@ def lstar_main():
     
     digraph = functools.partial(gv.Digraph, format='png')
 
-    # traces = open('thy_31_traces','rb')
-    # data = json.load(traces)
-    # requests_list  = data['requests']
-    # responses_list = data['responses']
+    traces = open('template_approach_traces','rb')
+    data = json.load(traces)
+    requests_list  = data['requests']
+    responses_list = data['responses']
 
-    requests_list, responses_list = parse_service_traces()
+    # requests_list, responses_list = parse_service_traces()
 
-    # responses_list = response_enumeration(responses_list)
+    responses_list = response_enumeration(responses_list)
 
     edges = progressive_learn(requests_list, responses_list)
 

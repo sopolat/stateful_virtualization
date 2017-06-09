@@ -19,7 +19,7 @@ for k in range(5):
     loginTokens["".join(secure_random.choice(string.ascii_uppercase + string.digits) for _ in range(5))] = data
 reqList = []
 resList = []
-for i in range( 100):
+for i in range( 50):
     requests=[]
     responses=[]
     loginId="bos"
@@ -28,7 +28,7 @@ for i in range( 100):
     requests.append( "loginAs:" + idOf)
     responses.append("OK")
     loginId=idOf
-    for j in range(20):
+    for j in range(10):
         func = secure_random.randint(1,101)
         if func in range(1,6):
             #create user
@@ -79,7 +79,7 @@ for i in range( 100):
             if loginId=="bos":
                 response="error"
             else:
-                response=str(loginTokens[loginId])
+                response=str(loginTokens[loginId]).replace('\'','')
         elif func in range(96,102):
             #loginAs
             idOf="".join(secure_random.choice(loginTokens.keys()))
@@ -90,3 +90,13 @@ for i in range( 100):
         responses.append(response)
     reqList.append(requests)
     resList.append(responses)
+
+file = open('template_approach_traces', 'w')
+file.write('{')
+file.write('\n')
+file.write(str(reqList))
+file.write('\n')
+file.write(str(resList))
+file.write('\n')
+file.write('}')
+file.close()

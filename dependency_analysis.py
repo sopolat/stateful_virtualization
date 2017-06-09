@@ -1,11 +1,10 @@
 
 def parse_traces():
-
     '''
     Parses the trace file.
     '''
-    trace_file = open('service_traces','r')
-    clear_trace_file = open('clear_service_traces','w')
+    trace_file = open('service_traces', 'r')
+    clear_trace_file = open('clear_service_traces', 'w')
 
     lines = trace_file.readlines()
 
@@ -15,15 +14,15 @@ def parse_traces():
         else:
             clear_trace_file.write(line)
 
-def find_dependencies():
 
+def find_dependencies():
     '''
     Finds the dependencies between request types.
     '''
     service_traces = open('clear_service_traces', 'r')
 
     request_types = []
-    request_datas = []
+    request_data = []
     requests = []
     responses = []
     while True:
@@ -31,15 +30,16 @@ def find_dependencies():
         request_data = service_traces.readline()
         response = service_traces.readline()
 
-        if not request_type or not request_data or not response: break  # EOF
+        if not request_type or not request_data or not response:
+            break  # EOF
 
         request_types.append(request_type)
-        request_datas.append(request_data)
+        request_data.append(request_data)
         requests.append([request_type, request_data])
         responses.append(response)
 
     print len(request_types)
-    print len(request_datas)
+    print len(request_data)
     print len(responses)
 
     used = []
@@ -47,26 +47,27 @@ def find_dependencies():
     j = 0
     for request in requests:
         print str(j) + ' -- ' + str(request)
-        indices = [i for i, x in enumerate(requests) 
-                    if x == request and i not in used]
+        indices = [i for i, x in enumerate(requests)
+                   if x == request and i not in used]
         if len(indices) > 1:
             groups.append(indices)
         used += indices
-        j += 1 
+        j += 1
 
     print groups
 
     dependancy_mapping = {}
     for group in groups:
-        for i in range(len(group)-1):
-            if not responses[group[i]] == responses[group[i+1]]:
-                start = group[i]+1
-                end   = group[i+1]
+        for i in range(len(group) - 1):
+            if not responses[group[i]] == responses[group[i + 1]]:
+                start = group[i] + 1
+                end = group[i + 1]
                 # print group
                 # print str(start) + ' ' + str(end)
                 # print tuple(request_types[start:end])
                 # print request_types[group[i]]
-                dependancy_mapping[tuple(request_types[start:end])] = request_types[group[i]]
+                dependancy_mapping[tuple(request_types[start:end])] = request_types[
+                    group[i]]
 
     for key in dependancy_mapping:
         print str(key) + ' affects ' + str(dependancy_mapping[key])
