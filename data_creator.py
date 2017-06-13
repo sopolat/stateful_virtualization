@@ -30,7 +30,7 @@ for i in range(1):
     requests.append("loginAs:" + idOf)
     responses.append("OK")
     loginId = idOf
-    for j in range(100):
+    for j in range(200):
         func = secure_random.randint(1, 140)
         if func in range(0, 0):
             # create user
@@ -47,7 +47,7 @@ for i in range(1):
             # update name
             updateData = names.get_first_name()
             request = "updateName:" + updateData
-            if func % 4 == 0:
+            if False:
                 response = "error"
             else:
                 data = loginTokens[loginId]
@@ -58,7 +58,7 @@ for i in range(1):
             # updateSurname
             updateData = names.get_last_name()
             request = "updateSurname:" + updateData
-            if func % 4 == 0:
+            if False:
                 response = "error"
             else:
                 data = loginTokens[loginId]
@@ -70,7 +70,7 @@ for i in range(1):
             updateData = "054" + \
                 "".join(secure_random.choice(string.digits) for _ in range(8))
             request = "updateTel:" + updateData
-            if func % 4 == 0:
+            if False:
                 response = "error"
             else:
                 data = loginTokens[loginId]
