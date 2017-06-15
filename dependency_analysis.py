@@ -84,7 +84,7 @@ def find_dependencies():
                 is_changed = 1
             start = group[i] + 1
             end = group[i + 1]
-            dep_list.append(tuple(request_types[start:end], is_changed))
+            dep_list.append((request_types[start:end], is_changed))
 
         dependancy_mapping[request_types[group[0]]] = dep_list
 
@@ -98,4 +98,4 @@ def difference_function():
 
     return True
 if __name__ == "__main__":
-    find_dependencies()
+    dependancy_mapping = find_dependencies()
