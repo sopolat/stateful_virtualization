@@ -1,5 +1,6 @@
 
 import json
+from Bio import pairwise2
 
 def parse_traces():
     '''
@@ -90,6 +91,11 @@ def find_dependencies():
     # print dependancy[0]+ ' affects ' + dependancy[1]
 
     return dependancy_mapping
-    
+
+def difference_function():
+
+    pairwise2.align.localxx('','')
+
+    return True
 if __name__ == "__main__":
     dependancy_mapping = find_dependencies()
