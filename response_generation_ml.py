@@ -88,10 +88,11 @@ forest = RandomForestClassifier(n_estimators=10)
 multi_target_forest = MultiOutputClassifier(forest)
 classifier = multi_target_forest.fit(datapoints, outputs)
 
-
-request_types_list = data['request_types'][-1]
-request_data_list  = data['request_data'][-1]
-response_data_list = data['response_data'][-1]
+traces = open('ml_traces', 'rb')
+data = json.load(traces)
+request_types_list = [data['request_types'][-1]]
+request_data_list  = [data['request_data'][-1]]
+response_data_list = [data['response_data'][-1]]
 
 datapoints = []
 outputs = []
