@@ -200,7 +200,7 @@ def lstar_main():
         add_nodes(digraph(), node_list),
         edge_list
     )
-    graph.render('img/lstar_two_traces') 
+    graph.render('img/lstar_thy_traces') 
 
     return True
 
