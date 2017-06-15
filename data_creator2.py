@@ -9,6 +9,8 @@ import names
 import random
 import string
 
+
+funs=[15,10,28,44,50,3,30,33]
 loginTokens = {}
 secure_random = random.SystemRandom()
 #for k in range(5):
@@ -52,7 +54,8 @@ for i in range(20):
     responses.append(response)
     
     for j in range(8):
-        func = secure_random.randint(1, 60)
+#        func = secure_random.randint(1, 60)
+        func = funs[j]
         request =[]
         response = []
         if func in range(0, 0):
