@@ -23,7 +23,7 @@ secure_random = random.SystemRandom()
 typeList = []
 reqList = []
 resList = []
-for i in range(100):
+for i in range(20):
     requestTypes = []
     requests = []
     responses = []
@@ -154,7 +154,7 @@ for i in range(100):
     reqList.append(requests)
     resList.append(responses)
 
-file = open('template_approach_traces', 'w')
+file = open('ml_traces', 'w')
 file.write('{')
 file.write('\n\"request_types\" : ')
 file.write(str(typeList).replace("\'","\""))
