@@ -25,7 +25,7 @@ secure_random = random.SystemRandom()
 typeList = []
 reqList = []
 resList = []
-for i in range(20):
+for i in range(40):
     requestTypes = []
     requests = []
     responses = []
@@ -76,7 +76,7 @@ for i in range(20):
             requestTypes.append("updateName")
             
             request.append(updateData)
-            if func%10 == 0:
+            if 1==0:#func%10 == 0:
                 response.append("error")
             else:
                 data = loginTokens[loginId]
@@ -88,7 +88,7 @@ for i in range(20):
             requestTypes.append("updateSurname")
             updateData = names.get_last_name()
             request.append(updateData)
-            if func%10 == 0:
+            if 1==0:#func%10 == 0:
                 response.append( "error")
             else:
                 data = loginTokens[loginId]
@@ -101,7 +101,7 @@ for i in range(20):
             updateData = "054" + \
                 "".join(secure_random.choice(string.digits) for _ in range(8))
             request.append( updateData)
-            if func%10 == 0:
+            if 1==0:#func%10 == 0:
                 response.append("error")
             else:
                 data = loginTokens[loginId]
