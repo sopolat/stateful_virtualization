@@ -1,0 +1,85 @@
+
+import random
+
+number_of_traces = 1
+trace_size = 10
+
+traces = {}
+for i in range(number_of_traces):
+    request_types = []
+    request_data = []
+    response_data = []
+
+    id_counter = 1
+    services = []
+    for j in range(trace_size):
+        rand_number = random.randint(0, 2)
+        used_ids = []
+        if rand_number == 0:
+            request_types.append('service/add/')
+
+            payload = []
+            payload.append(id_counter)
+            payload.append('service' + str(id_counter))
+            payload.append('someurl' + str(id_counter))
+            payload.append('SOAP')
+
+            request_data.append(payload)
+
+            if len(services) < 3:
+
+                response_data.append(['OK'])
+
+                serv_dict = {}
+                serv_dict['id'] = id_counter
+                serv_dict['serviceName'] = 'service' + str(id_counter)
+                serv_dict['serviceUrl'] = 'someurl' + str(id_counter)
+                serv_dict['protocol'] = 'SOAP'
+                services.append(serv_dict)
+
+                used_ids.append(id_counter)
+
+                id_counter += 1
+
+            else:
+                response_data.append(['ERROR'])
+
+        if rand_number == 1:
+            request_types.append('service/delete/')
+
+            if len(services) > 0:
+                service_to_be_deleted = random.randint(0, len(services) - 1)
+                delete_id = services[service_to_be_deleted]['id']
+                response_data.append(['OK'])
+                services.remove(services[service_to_be_deleted])
+            else:
+                delete_id = random.randint(0, 5)
+                response_data.append(['ERROR'])
+
+            payload = []
+            payload.append(delete_id)
+            request_data.append(payload)
+
+        if rand_number == 2:
+            request_types.append('service/list/')
+
+            payload = []
+            payload.append("")
+
+            request_data.append(payload)
+            response_data.append(str(services))
+
+
+file = open('ml_service_traces', 'w')
+file.write('{')
+file.write('\n\"request_types\" : ')
+file.write(str(request_types).replace("\'", "\""))
+file.write(' ,')
+file.write('\n\"request_data\" : ')
+file.write(str(request_data).replace("\'", "\""))
+file.write(' ,')
+file.write('\n\"response_data\" : ')
+file.write(str(response_data).replace("\'", "\""))
+file.write('\n')
+file.write('}')
+file.close()
