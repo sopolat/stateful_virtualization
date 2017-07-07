@@ -2,7 +2,7 @@
 import random
 
 number_of_traces = 2000
-trace_size = 19
+trace_size = 9
 limit = 3
 operation_to_be_trained = 'delete'
  

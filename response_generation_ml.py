@@ -110,7 +110,7 @@ for i in range(total_length):
 
     datapoints.append(datapoint)
     outputs.append(output)
-    # print output
+    print i
 
     if len(datapoint) > max_len:
         max_len = len(datapoint)
@@ -119,7 +119,7 @@ for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
 
-mlp = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
+mlp = MLPClassifier(solver='lbgfs', alpha=1e-5, hidden_layer_sizes=(100, ),
                     random_state=1, activation='logistic', max_iter=1000)
 
 # multi_target_forest = MultiOutputRegressor(mlp)
