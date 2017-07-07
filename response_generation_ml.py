@@ -129,6 +129,9 @@ mlp = MLPClassifier(solver='lbgfs', alpha=1e-5, hidden_layer_sizes=(100, ),
 # print len(outputs)
 print 'train is over. test starts here.'
 
+outfile = file('outfile_ml', 'w')
+outfile.write('Out Predicted')
+outfile.write('\n')
 wrong_guess_counter = 0
 for k in range(10):
     mlp.fit(datapoints[(k + 1) * 20:] + datapoints[:k * 20],
@@ -142,6 +145,9 @@ for k in range(10):
         predicted = mlp.predict(datapoints[i])
         if outputs[i] != predicted[0]:
             wrong_guess_counter += 1
+            outfile.write(str(outputs[i])  + ' ' + str(predicted))
+            outfile.write('\n')
+
 
         # print str(outputs[i])  + ' ' + str(predicted)# true response vs
         # predicted
