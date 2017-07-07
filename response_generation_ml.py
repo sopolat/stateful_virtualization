@@ -4,7 +4,6 @@ Response generation with machine learning. Data preperation.
 '''
 import numpy as np
 from sklearn import svm
-from sklearn.model_selection import StratifiedKFold
 from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.multioutput import MultiOutputClassifier, MultiOutputRegressor
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
