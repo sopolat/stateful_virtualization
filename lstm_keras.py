@@ -67,12 +67,12 @@ def read_bank_data():
         if len(line2) > max_len:
             max_len = len(line2)
         if not line1 or not line2: break  # EOF
-        requests.append(line1.upper())
-        responses.append(line2.upper())
+        requests.append(line1.strip().upper())
+        responses.append(line2.strip().upper())
 
     return max_len, requests, responses
 
-    
+
 def create_data():
     num = np.random.randint(1, 100)
     tk = "TK%s" % np.random.randint(3, 400)
