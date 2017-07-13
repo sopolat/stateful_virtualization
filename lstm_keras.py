@@ -96,12 +96,12 @@ MAXLEN, questions, expected = read_bank_data()
 
 # Parameters for the model and dataset.
 TRAINING_SIZE = len(questions)
-DIGITS = MAXLEN
+DIGITS = len(questions)+3
 INVERT = False
 
-# Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
-# int is DIGITS.
-# MAXLEN = DIGITS + 1
+Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
+int is DIGITS.
+MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
 chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<> '
