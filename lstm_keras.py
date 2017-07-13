@@ -53,6 +53,21 @@ def mapper(month):
                   "09": "EYL", "10":"EKI", "11":"KAS", "12":"ARA"}
     return months_map.get(month, "OCA")
 
+
+def read_bank_data():
+    fr = open("soapBankData", 'r')
+    max_len = 0
+    while True:
+        line1 = fr.readline()
+        line2 = fr.readline()
+        if len(line1) > max_len:
+            max_len = len(line1)
+        if len(line2) > max_len:
+            max_len = len(line2)
+        if not line1 or not line2: break  # EOF
+        requests.append(line1)
+        responses.append(line2)
+
 def create_data():
     num = np.random.randint(1, 100)
     tk = "TK%s" % np.random.randint(3, 400)
@@ -67,7 +82,7 @@ def create_data():
 a, b = create_data()
 
 # Parameters for the model and dataset.
-TRAINING_SIZE = 15000
+TRAINING_SIZE = 1000
 DIGITS = len(b)+3
 INVERT = False
 
@@ -86,17 +101,17 @@ seen = set()
 print('Generating data...')
 while len(questions) < TRAINING_SIZE:
 
-    a,b = create_data()
-    key = tuple(sorted((a, b)))
-    if key in seen:
-        continue
-    seen.add(key)
+    # a,b = create_data()
+    # key = tuple(sorted((a, b)))
+    # if key in seen:
+    #     continue
+    # seen.add(key)
 
     query = a + ' ' * (MAXLEN - len(a))
     ans   = b + ' ' * (MAXLEN - len(b))
 
-    questions.append(query)
-    expected.append(ans)
+    # questions.append(query)
+    # expected.append(ans)
 
 print('Total addition questions:', len(questions))
 print("question: ", (questions[0]))
@@ -185,7 +200,7 @@ for iteration in range(1, LSTM_ITERATION):
 
     # Select 10 samples from the validation set at random so we can visualize
     # errors.
-    for i in range(10):
+    for i in range(5):
         ind = np.random.randint(0, len(x_val))
         rowx, rowy = x_val[np.array([ind])], y_val[np.array([ind])]
         preds = model.predict_classes(rowx, verbose=0)
@@ -203,5 +218,5 @@ for iteration in range(1, LSTM_ITERATION):
         print(guess)
         print('------------')
 
-    time.sleep(2)
+    # time.sleep(2)
 
