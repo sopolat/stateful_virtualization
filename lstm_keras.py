@@ -65,8 +65,8 @@ def read_bank_data():
         if len(line2) > max_len:
             max_len = len(line2)
         if not line1 or not line2: break  # EOF
-        requests.append(line1)
-        responses.append(line2)
+        requests.append(line1.upper())
+        responses.append(line2.upper())
 
 def create_data():
     num = np.random.randint(1, 100)
@@ -79,27 +79,36 @@ def create_data():
     b = "1 {1} I {2} {4}{3}".format(num, tk, th, st, end)
     return a, b
 
-a, b = create_data()
+# a, b = create_data()
+
+
+print('Generating data...')
+
+questions = []
+expected = []
+MAXLEN, questions, expected = read_bank_data()
+
 
 # Parameters for the model and dataset.
-TRAINING_SIZE = 1000
-DIGITS = len(b)+3
+TRAINING_SIZE = len(questions)
+DIGITS = MAXLEN
 INVERT = False
 
 # Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
 # int is DIGITS.
-MAXLEN = DIGITS + 1
+# MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
-chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ- '
+chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<> '
 ctable = CharacterTable(chars)
 
-questions = []
-expected = []
-seen = set()
+for i in range(TRAINING_SIZE):
+    questions[i] = questions[i] + ' ' * (MAXLEN - len(questions[i]))
+    expected[i] = expected[i] + ' ' * (MAXLEN - len(expected[i]))
 
-print('Generating data...')
-while len(questions) < TRAINING_SIZE:
+# seen = set()
+
+# while len(questions) < TRAINING_SIZE:
 
     # a,b = create_data()
     # key = tuple(sorted((a, b)))
@@ -107,8 +116,8 @@ while len(questions) < TRAINING_SIZE:
     #     continue
     # seen.add(key)
 
-    query = a + ' ' * (MAXLEN - len(a))
-    ans   = b + ' ' * (MAXLEN - len(b))
+    # query = a + ' ' * (MAXLEN - len(a))
+    # ans   = b + ' ' * (MAXLEN - len(b))
 
     # questions.append(query)
     # expected.append(ans)
@@ -182,7 +191,7 @@ model.add(layers.Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
 
-keyboard.wait("space")
+#keyboard.wait("space")
 
 
 print('TRAIN START')
