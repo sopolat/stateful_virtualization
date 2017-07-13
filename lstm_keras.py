@@ -62,6 +62,9 @@ def read_bank_data():
     while True:
         line1 = fr.readline()
         line2 = fr.readline()
+        #190 is chosen based on the data
+        if len(line1) > 190 or len(line2) >190:
+            continue
         if len(line1) > max_len:
             max_len = len(line1)
         if len(line2) > max_len:
@@ -69,7 +72,6 @@ def read_bank_data():
         if not line1 or not line2: break  # EOF
         requests.append(line1.strip().upper())
         responses.append(line2.strip().upper())
-
     return max_len, requests, responses
 
 
@@ -104,12 +106,12 @@ INVERT = False
 MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
-chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<> '
+chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<>#'
 ctable = CharacterTable(chars)
 
 for i in range(TRAINING_SIZE):
-    questions[i] = questions[i] + ' ' * (MAXLEN - len(questions[i]))
-    expected[i] = expected[i] + ' ' * (MAXLEN - len(expected[i]))
+    questions[i] = questions[i] + '#' * (MAXLEN - len(questions[i]))
+    expected[i] = expected[i] + '#' * (MAXLEN - len(expected[i]))
 
 # seen = set()
 
