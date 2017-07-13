@@ -67,7 +67,7 @@ def create_data():
 a, b = create_data()
 
 # Parameters for the model and dataset.
-TRAINING_SIZE = 15000
+TRAINING_SIZE = 150
 DIGITS = len(b)+3
 INVERT = False
 
@@ -167,7 +167,7 @@ model.add(layers.Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
 
-keyboard.wait("space")
+#keyboard.wait("space")
 
 
 print('TRAIN START')
