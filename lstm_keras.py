@@ -55,7 +55,7 @@ def mapper(month):
 
 
 def read_bank_data():
-    fr = open("soapBankData", 'r')
+    fr = open("bank_data.xml", 'r')
     max_len = 0
     while True:
         line1 = fr.readline()
