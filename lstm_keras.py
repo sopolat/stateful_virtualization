@@ -106,7 +106,7 @@ INVERT = False
 MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
-chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<>#'
+chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<># '
 ctable = CharacterTable(chars)
 
 for i in range(TRAINING_SIZE):
