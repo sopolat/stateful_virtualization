@@ -3,14 +3,9 @@
 Response generation with machine learning. Data preperation.
 '''
 import numpy as np
-from sklearn import svm
-from sklearn.neural_network import MLPClassifier, MLPRegressor
-from sklearn.multioutput import MultiOutputClassifier, MultiOutputRegressor
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.feature_selection import RFECV
-from sklearn.decomposition import PCA
+from sklearn.neural_network import MLPClassifier
+# from sklearn.ensemble import AdaBoostClassifier
 import json
-import sys
 
 
 def one_hot_encoder(type, request_types_list, request_data_list, response_data_list,
@@ -74,7 +69,7 @@ def get_unique_data(req_type, request_types_list, data_list):
         part_corresponding_data_flat = [
             item for sublist in part_corresponding_data for item in sublist]
         corresponding_data += part_corresponding_data_flat
-
+    # print corresponding_data
     unique_corresponding_data = list(set(corresponding_data))
 
     return unique_corresponding_data
@@ -104,13 +99,22 @@ for i in range(total_length):
     request_data = request_data_list[i]
     response_data = response_data_list[i]
 
+    num_elem_in_list = 0
+    for k in range(len(request_types)):
+        if request_types[k] == "service/add/" and response_data[k] == ["OK"]:
+            num_elem_in_list += 1
+        elif request_types[k] == "service/delete/" and response_data[k] == ["OK"]:
+            num_elem_in_list -= 1
+
+    print num_elem_in_list
+
     datapoint, output = one_hot_encoder('train',
-            request_types_list, request_data_list,  response_data_list,
-            request_types, request_data, response_data, unique_req_types)
+                                        request_types_list, request_data_list,  response_data_list,
+                                        request_types, request_data, response_data, unique_req_types)
 
     datapoints.append(datapoint)
-    outputs.append(output)
-    print i
+    outputs.append(num_elem_in_list)
+    # print i
 
     if len(datapoint) > max_len:
         max_len = len(datapoint)
@@ -119,7 +123,7 @@ for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
 
-mlp = MLPClassifier(solver='lbgfs', alpha=1e-5, hidden_layer_sizes=(100, ),
+mlp = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
                     random_state=1, activation='logistic', max_iter=1000)
 
 # multi_target_forest = MultiOutputRegressor(mlp)
@@ -133,22 +137,23 @@ outfile = file('outfile_ml', 'w')
 outfile.write('Out Predicted')
 outfile.write('\n')
 wrong_guess_counter = 0
+CROSS_VAL_SIZE = 100
 for k in range(10):
-    mlp.fit(datapoints[(k + 1) * 20:] + datapoints[:k * 20],
-            outputs[(k + 1) * 20:] + outputs[:k * 20])
-
+    mlp.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
+            outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
+    print 'fitted'
     #######################################
     ##############TEST PART################
     #######################################
 
-    for i in range((k * 20), ((k + 1) * 20)):
-        predicted = mlp.predict(datapoints[i])
+    for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
+        datap = np.array(datapoints[i]).reshape(1, -1)
+        predicted = mlp.predict(datap)
         if outputs[i] != predicted[0]:
             wrong_guess_counter += 1
-            outfile.write(str(outputs[i])  + ' ' + str(predicted))
-            outfile.write('\n')
 
-
+        outfile.write(str(outputs[i]) + ' ' + str(predicted))
+        outfile.write('\n')
         # print str(outputs[i])  + ' ' + str(predicted)# true response vs
         # predicted
 

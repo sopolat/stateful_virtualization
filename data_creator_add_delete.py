@@ -1,8 +1,8 @@
 
 import random
 
-number_of_traces = 2000
-trace_size = 19
+number_of_traces = 1000
+trace_size = 11
 limit = 3
 operation_to_be_trained = 'delete'
  
@@ -72,9 +72,10 @@ for i in range(number_of_traces):
             payload.append("")
 
             request_data.append(payload)
-            response_data.append(str(services))
-
-
+            serv_list = []
+            for serv in services:
+                serv_list.append(serv.values())    
+            response_data.append(serv_list)
 
 
     if operation_to_be_trained == 'add':
@@ -137,7 +138,7 @@ file.write('\n\"request_data\" : ')
 file.write(str(request_data_list).replace("\'", "\""))
 file.write(' ,')
 file.write('\n\"response_data\" : ')
-file.write(str(response_data_list).replace("\'", "\""))
+file.write(str(response_data_list).replace("\'", "\"").replace("]\"","]").replace("\"[","["))
 file.write('\n')
 file.write('}')
 file.close()
