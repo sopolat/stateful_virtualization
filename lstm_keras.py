@@ -57,6 +57,8 @@ def mapper(month):
 def read_bank_data():
     fr = open("bank_data.xml", 'r')
     max_len = 0
+    requests = []
+    responses = []
     while True:
         line1 = fr.readline()
         line2 = fr.readline()
@@ -68,6 +70,9 @@ def read_bank_data():
         requests.append(line1.upper())
         responses.append(line2.upper())
 
+    return max_len, requests, responses
+
+    
 def create_data():
     num = np.random.randint(1, 100)
     tk = "TK%s" % np.random.randint(3, 400)
