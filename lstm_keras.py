@@ -99,8 +99,8 @@ TRAINING_SIZE = len(questions)
 DIGITS = len(questions)+3
 INVERT = False
 
-Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
-int is DIGITS.
+# Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
+# int is DIGITS.
 MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
