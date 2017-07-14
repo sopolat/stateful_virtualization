@@ -169,9 +169,9 @@ print(y_val.shape)
 # Try replacing GRU, or SimpleRNN.
 RNN = layers.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 LAYERS = 2
-LSTM_ITERATION = 200
+LSTM_ITERATION = 800
 
 print('Build model...')
 model = Sequential()
@@ -235,4 +235,4 @@ for iteration in range(1, LSTM_ITERATION):
         print('------------')
 
     # time.sleep(2)
-
+model.save('bank_data_model.h5')
