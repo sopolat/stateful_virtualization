@@ -3,15 +3,15 @@
 Response generation with machine learning. Data preperation.
 '''
 import numpy as np
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 # from sklearn.ensemble import AdaBoostClassifier
 import json
-
+import sys
 
 def one_hot_encoder(type, request_types_list, request_data_list, response_data_list,
                     request_types, request_data, response_data, unique_req_types):
     '''
-    1-of-c encoding function 
+    one-hot encoding function 
     '''
 
     request_type_encoding_dict = {}
@@ -33,10 +33,13 @@ def one_hot_encoder(type, request_types_list, request_data_list, response_data_l
 
         unique_corresponding_req_data = get_unique_data(
             req_type, request_types_list, request_data_list)
-        for data in req_data:
-            part_datapoint = [0] * len(unique_corresponding_req_data)
-            part_datapoint[unique_corresponding_req_data.index(data)] = 1
-            encoded_data += part_datapoint
+        if req_type == 'updateName':
+            encoded_data += [unique_corresponding_req_data.index(req_data[0])]
+        else:    
+            for data in req_data:
+                part_datapoint = [0] * len(unique_corresponding_req_data)
+                part_datapoint[unique_corresponding_req_data.index(data)] = 1
+                encoded_data += part_datapoint
 
         unique_corresponding_res_data = get_unique_data(
             req_type, request_types_list, response_data_list)
@@ -44,13 +47,37 @@ def one_hot_encoder(type, request_types_list, request_data_list, response_data_l
             part_datapoint = [0] * len(unique_corresponding_res_data)
             part_datapoint[unique_corresponding_res_data.index(data)] = 1
 
-            if j == len(request_types) - 1:
-                encoded_ouput = part_datapoint[0]
+            if j == len(request_types) - 1 and res_data.index(data) == 0:
+                unique_corresponding_req_data = get_unique_data(
+                    "updateName", request_types_list, request_data_list)
+                # unique_corresponding_req_data.sort()
+                # print data
+                # print res_data
+                # print unique_corresponding_req_data
+                encoded_ouput = output_encoder(unique_corresponding_req_data, request_data, data)
             else:
                 encoded_data += part_datapoint
 
     return encoded_data, encoded_ouput
 
+def output_encoder(unique_corresponding_req_data, request_data, data):
+    flat_request_data = [item for sublist in request_data for item in sublist]
+    # encoded_output = []
+    # test for only the first name. ignore phone number and surname
+    # data = res_data[0]
+    # for data in res_data[0]:
+    # print data
+    # print flat_request_data
+    # print unique_corresponding_req_data
+    if data in flat_request_data:
+        # part_datapoint = [0] * len(unique_corresponding_req_data)
+        # if data in unique_corresponding_req_data:
+        #     part_datapoint[unique_corresponding_req_data.index(data)] = 1
+        encoded_output = unique_corresponding_req_data.index(data)
+        # encoded_output = [0] * len(flat_request_data)
+        # encoded_output[flat_request_data.index(data)] = 1
+
+    return encoded_output
 
 def get_unique_data(req_type, request_types_list, data_list):
     '''
@@ -79,7 +106,7 @@ def get_unique_data(req_type, request_types_list, data_list):
 ############TRAINING PART##############
 #######################################
 
-traces = open('ml_service_traces', 'rb')
+traces = open('ml_traces', 'rb')
 data = json.load(traces)
 
 request_types_list = data['request_types']
@@ -99,22 +126,23 @@ for i in range(total_length):
     request_data = request_data_list[i]
     response_data = response_data_list[i]
 
-    num_elem_in_list = 0
-    for k in range(len(request_types)):
-        if request_types[k] == "service/add/" and response_data[k] == ["OK"]:
-            num_elem_in_list += 1
-        elif request_types[k] == "service/delete/" and response_data[k] == ["OK"]:
-            num_elem_in_list -= 1
+    # num_elem_in_list = 0
+    # for k in range(len(request_types)):
+    #     if request_types[k] == "service/add/" and response_data[k] == ["OK"]:
+    #         num_elem_in_list += 1
+    #     elif request_types[k] == "service/delete/" and response_data[k] == ["OK"]:
+    #         num_elem_in_list -= 1
 
-    print num_elem_in_list
+    # print num_elem_in_list
 
     datapoint, output = one_hot_encoder('train',
                                         request_types_list, request_data_list,  response_data_list,
                                         request_types, request_data, response_data, unique_req_types)
-
+    print datapoint
+    print output 
     datapoints.append(datapoint)
-    outputs.append(num_elem_in_list)
-    # print i
+    outputs.append(output)
+    print i
 
     if len(datapoint) > max_len:
         max_len = len(datapoint)
@@ -123,7 +151,7 @@ for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
 
-mlp = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
+mlp = MLPRegressor(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
                     random_state=1, activation='logistic', max_iter=1000)
 
 # multi_target_forest = MultiOutputRegressor(mlp)
@@ -137,7 +165,7 @@ outfile = file('outfile_ml', 'w')
 outfile.write('Out Predicted')
 outfile.write('\n')
 wrong_guess_counter = 0
-CROSS_VAL_SIZE = 100
+CROSS_VAL_SIZE = 20
 for k in range(10):
     mlp.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
             outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
@@ -149,7 +177,9 @@ for k in range(10):
     for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
         datap = np.array(datapoints[i]).reshape(1, -1)
         predicted = mlp.predict(datap)
-        if outputs[i] != predicted[0]:
+        # print outputs[i]
+        # print predicted
+        if outputs[i] != predicted.tolist()[0] :
             wrong_guess_counter += 1
 
         outfile.write(str(outputs[i]) + ' ' + str(predicted))

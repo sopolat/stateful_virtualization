@@ -25,7 +25,7 @@ secure_random = random.SystemRandom()
 typeList = []
 reqList = []
 resList = []
-for i in range(40):
+for i in range(200):
     requestTypes = []
     requests = []
     responses = []
@@ -38,7 +38,7 @@ for i in range(40):
 #    
     # create user
     idOf = "".join(secure_random.choice(
-        string.ascii_uppercase + string.digits) for _ in range(5))
+    string.ascii_uppercase + string.digits) for _ in range(5))
     request =[]
     request.append("")
     response = []
@@ -49,13 +49,18 @@ for i in range(40):
     data["tel"] = ""
     loginTokens[idOf] = data
     loginId = idOf
-    requestTypes.append("createUser")
-    requests.append(request)
-    responses.append(response)
+    requestTypes.insert(0, "createUser")
+    requests.insert(0, request)
+    responses.insert(0, response)
     
     for j in range(8):
-#        func = secure_random.randint(1, 60)
-        func = funs[j]
+        func = secure_random.randint(1, 60)
+        if func not in range(1, 21) and "updateName" not in requestTypes and j == 7:
+            func = 10
+        while func in range(1, 21) and "updateName" in requestTypes:
+            func = secure_random.randint(1, 60)
+
+        # func = funs[j]
         request =[]
         response = []
         if func in range(0, 0):
@@ -73,6 +78,7 @@ for i in range(40):
         elif func in range(1, 21):
             # update name
             updateData = names.get_first_name()
+            # print updateData
             requestTypes.append("updateName")
             
             request.append(updateData)
@@ -144,6 +150,16 @@ for i in range(40):
             loginId = idOf
         requests.append(request)
         responses.append(response)
+
+    # from sklearn.utils import shuffle
+    # requestTypes_s, requests_s, responses_s = shuffle(requestTypes[1:], requests[1:], responses[1:])
+    # requestTypes_s.insert(0,requestTypes[0])
+    # requests_s.insert(0,requests[0])
+    # responses_s.insert(0,responses[0])
+    # requestTypes = requestTypes_s
+    # requests = requests_s
+    # responses = responses_s
+
     request =[]
     response = []
     requestTypes.append("who")
