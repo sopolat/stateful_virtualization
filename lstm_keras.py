@@ -53,6 +53,26 @@ def mapper(month):
                   "09": "EYL", "10":"EKI", "11":"KAS", "12":"ARA"}
     return months_map.get(month, "OCA")
 
+def read_stateful_user_data():
+    fr = open("ml_traces_lstm", 'r')
+    max_len = 0
+    requests = []
+    responses = []
+    chars = ""
+    while True:
+        line1 = fr.readline()
+        line2 = fr.readline()
+        if not line1 or not line2: break  # EOF
+        if len(line1) > max_len:
+            max_len = len(line1)
+        if len(line2) > max_len:
+            max_len = len(line2)
+        requests.append(line1.strip().upper())
+        responses.append(line2.strip().upper())
+        chars += line1.strip().upper()
+        chars += line2.strip().upper()
+    chars = ''.join(list(set(chars)))
+    return chars, max_len, requests, responses
 
 def read_bank_data():
     fr = open("bank_data.xml", 'r')
@@ -93,8 +113,10 @@ print('Generating data...')
 
 questions = []
 expected = []
-MAXLEN, questions, expected = read_bank_data()
-
+# MAXLEN, questions, expected = read_bank_data()
+chars, MAXLEN, questions, expected = read_stateful_user_data()
+print chars
+read_stateful_user_data
 
 # Parameters for the model and dataset.
 TRAINING_SIZE = len(questions)
@@ -106,7 +128,7 @@ INVERT = False
 MAXLEN = DIGITS + 1
 
 # All the numbers, plus sign and space for padding.
-chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<># '
+# chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:\"/=?<># '
 ctable = CharacterTable(chars)
 
 for i in range(TRAINING_SIZE):
@@ -235,4 +257,4 @@ for iteration in range(1, LSTM_ITERATION):
         print('------------')
 
     # time.sleep(2)
-model.save('bank_data_model.h5')
+model.save('stateful_user_data.h5')
