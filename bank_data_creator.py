@@ -14,8 +14,8 @@ while True:
 from random import randint
 
 for i in range(500):
-
-    fw.write('\n')
+    if i != 0:
+        fw.write('\n')
     dep_req_1 = '<?xml?><S:Envelope xmlns:S=""><S:Body><ns2:depositMoney xmlns:ns2=""><accountId>'
     f = randint(10, 999)
     s = randint(10, 999)
