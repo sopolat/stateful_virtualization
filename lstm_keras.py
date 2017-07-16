@@ -98,7 +98,7 @@ MAXLEN, questions, expected = read_bank_data()
 
 # Parameters for the model and dataset.
 TRAINING_SIZE = len(questions)
-DIGITS = len(questions[0])+3
+DIGITS = MAXLEN+3
 INVERT = False
 
 # Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
@@ -169,9 +169,9 @@ print(y_val.shape)
 # Try replacing GRU, or SimpleRNN.
 RNN = layers.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 LAYERS = 2
-LSTM_ITERATION = 200
+LSTM_ITERATION = 800
 
 print('Build model...')
 model = Sequential()
@@ -235,4 +235,4 @@ for iteration in range(1, LSTM_ITERATION):
         print('------------')
 
     # time.sleep(2)
-
+model.save('bank_data_model.h5')
