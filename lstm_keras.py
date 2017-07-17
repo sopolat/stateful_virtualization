@@ -262,4 +262,3 @@ for iteration in range(1, LSTM_ITERATION):
 
     # time.sleep(2)
 model.save('stateful_user_data.h5')
-v
