@@ -55,7 +55,8 @@ def mapper(month):
 
 def read_stateful_user_data():
     fr = open("ml_traces_lstm", 'r')
-    max_len = 0
+    max_len_req = 0
+    max_len_res = 0
     requests = []
     responses = []
     chars = ""
@@ -63,16 +64,17 @@ def read_stateful_user_data():
         line1 = fr.readline()
         line2 = fr.readline()
         if not line1 or not line2: break  # EOF
-        if len(line1) > max_len:
-            max_len = len(line1)
-        if len(line2) > max_len:
-            max_len = len(line2)
+        if len(line1) > max_len_req:
+            max_len_req = len(line1)
+        if len(line2) > max_len_res:
+            max_len_res = len(line2)
         requests.append(line1.strip().upper())
         responses.append(line2.strip().upper())
         chars += line1.strip().upper()
         chars += line2.strip().upper()
     chars = ''.join(list(set(chars)))
-    return chars, max_len, requests, responses
+
+    return chars, max_len_req, max_len_res, requests, responses
 
 def read_bank_data():
     fr = open("bank_data.xml", 'r')
@@ -114,14 +116,14 @@ print('Generating data...')
 questions = []
 expected = []
 # MAXLEN, questions, expected = read_bank_data()
-chars, MAXLEN, questions, expected = read_stateful_user_data()
+
+chars, MAXLEN_REQ, MAXLEN_RES, questions, expected = read_stateful_user_data()
 chars += '#'
-print(chars)
-read_stateful_user_data
+print (chars)
 
 # Parameters for the model and dataset.
 TRAINING_SIZE = len(questions)
-DIGITS = MAXLEN+3
+DIGITS = MAXLEN_RES+3
 INVERT = False
 
 # Maximum length of input is 'int + int' (e.g., '345+678'). Maximum length of
@@ -133,8 +135,8 @@ MAXLEN = DIGITS + 1
 ctable = CharacterTable(chars)
 
 for i in range(TRAINING_SIZE):
-    questions[i] = questions[i] + '#' * (MAXLEN - len(questions[i]))
-    expected[i] = expected[i] + '#' * (MAXLEN - len(expected[i]))
+    questions[i] = questions[i] + '#' * (MAXLEN_REQ - len(questions[i]))
+    expected[i] = expected[i] + '#' * (MAXLEN_RES - len(expected[i]))
 
 # seen = set()
 
@@ -157,14 +159,14 @@ print("question: ", (questions[0]))
 print("answer: ", (expected[0]))
 
 print('Vectorization...')
-x = np.zeros((len(questions), MAXLEN, len(chars)), dtype=np.bool)
-y = np.zeros((len(questions), MAXLEN, len(chars)), dtype=np.bool)
+x = np.zeros((len(questions), MAXLEN_REQ, len(chars)), dtype=np.bool)
+y = np.zeros((len(questions), MAXLEN_RES, len(chars)), dtype=np.bool)
 
 for i, sentence in enumerate(questions):
-    x[i] = ctable.encode(sentence, MAXLEN)
+    x[i] = ctable.encode(sentence, MAXLEN_REQ)
 
 for i, sentence in enumerate(expected):
-    y[i] = ctable.encode(sentence, MAXLEN)
+    y[i] = ctable.encode(sentence, MAXLEN_RES)
 
 
 # Shuffle (x, y) in unison as the later parts of x will almost all be larger
@@ -259,3 +261,4 @@ for iteration in range(1, LSTM_ITERATION):
 
     # time.sleep(2)
 model.save('stateful_user_data.h5')
+v
