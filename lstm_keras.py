@@ -208,7 +208,7 @@ model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN_REQ, len(chars))))
 # As the decoder RNN's input, repeatedly provide with the last hidden state of
 # RNN for each time step. Repeat 'DIGITS + 1' times as that's the maximum
 # length of output, e.g., when DIGITS=3, max output is 999+999=1998.
-model.add(layers.RepeatVector(DIGITS+1))
+model.add(layers.RepeatVector(MAXLEN_RES))
 # The decoder RNN could be multiple layers stacked or a single layer.
 for _ in range(LAYERS):
     # By setting return_sequences to True, return not only the last output but
