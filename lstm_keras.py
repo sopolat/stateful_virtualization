@@ -115,7 +115,8 @@ questions = []
 expected = []
 # MAXLEN, questions, expected = read_bank_data()
 chars, MAXLEN, questions, expected = read_stateful_user_data()
-print chars
+chars += '#'
+print(chars)
 read_stateful_user_data
 
 # Parameters for the model and dataset.
@@ -193,7 +194,7 @@ RNN = layers.LSTM
 HIDDEN_SIZE = 128
 BATCH_SIZE = 64
 LAYERS = 2
-LSTM_ITERATION = 800
+LSTM_ITERATION = 1000
 
 print('Build model...')
 model = Sequential()
