@@ -137,7 +137,8 @@ ctable = CharacterTable(chars)
 for i in range(TRAINING_SIZE):
     questions[i] = questions[i] + '#' * (MAXLEN_REQ - len(questions[i]))
     expected[i] = expected[i] + '#' * (MAXLEN_RES - len(expected[i]))
-
+    print ( questions[i])
+    print (expected[i])
 # seen = set()
 
 # while len(questions) < TRAINING_SIZE:
@@ -203,7 +204,7 @@ model = Sequential()
 # "Encode" the input sequence using an RNN, producing an output of HIDDEN_SIZE.
 # Note: In a situation where your input sequences have a variable length,
 # use input_shape=(None, num_feature).
-model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN, len(chars))))
+model.add(RNN(HIDDEN_SIZE, input_shape=(MAXLEN_REQ, len(chars))))
 # As the decoder RNN's input, repeatedly provide with the last hidden state of
 # RNN for each time step. Repeat 'DIGITS + 1' times as that's the maximum
 # length of output, e.g., when DIGITS=3, max output is 999+999=1998.
