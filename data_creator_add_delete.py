@@ -29,7 +29,7 @@ for i in range(number_of_traces):
             payload.append('someurl' + str(id_counter))
             payload.append('SOAP')
 
-            request_data.append(payload)
+            request_data.append([payload])
 
             if len(services) < limit:
 
@@ -99,7 +99,7 @@ for i in range(number_of_traces):
             serv_dict['serviceName'] = 'service' + str(id_counter)
             serv_dict['serviceUrl'] = 'someurl' + str(id_counter)
             serv_dict['protocol'] = 'SOAP'
-            services.append(serv_dict)
+            services.append([serv_dict])
 
             used_ids.append(id_counter)
 

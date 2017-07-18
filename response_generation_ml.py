@@ -42,7 +42,7 @@ def one_hot_encoder(type, request_types_list, request_data_list, response_data_l
 
         unique_corresponding_req_data = get_unique_data(
             req_type, request_types_list, request_data_list)
- 
+
         for data in req_data:
             part_datapoint = [0] * len(unique_corresponding_req_data)
             part_datapoint[unique_corresponding_req_data.index(data)] = 1
@@ -99,19 +99,11 @@ def get_unique_data(req_type, request_types_list, data_list):
         corresponding_data += part_corresponding_data_flat
 
     if isinstance(corresponding_data[0], list):
-        unique_corresponding_data = list(uniq(corresponding_data))
+        unique_corresponding_data = [list(x) for x in set(tuple(x) for x in corresponding_data)]
     else:
         unique_corresponding_data = list(set(corresponding_data))
-
+    # print unique_corresponding_data
     return unique_corresponding_data
-
-def uniq(corresponding_data):
-    last = object()
-    for item in corresponding_data:
-        if item == last:
-            continue
-        yield item
-        last = item
 
 #######################################
 ############TRAINING PART##############
@@ -153,8 +145,9 @@ for i in range(total_length):
     datapoint, output = one_hot_encoder('train',
                                         request_types_list, request_data_list,  response_data_list,
                                         request_types, request_data, response_data, unique_req_types)
-    # print datapoint
-    # print output 
+    # print len(datapoint)
+    # print len(output)
+    
     datapoints.append(datapoint)
     outputs.append(output)
     print i
@@ -165,6 +158,7 @@ for i in range(total_length):
 for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
+print len(datapoint_resized)
 
 names = [#"Nearest Neighbors", "Linear SVM", "RBF SVM", "Neural Net",
          "Gaussian Process",
