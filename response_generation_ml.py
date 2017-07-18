@@ -160,14 +160,14 @@ for i in range(len(datapoints)):
     datapoints[i] = datapoint_resized
 print len(datapoint_resized)
 
-names = [#"Nearest Neighbors", "Linear SVM", "RBF SVM", "Neural Net",
+names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", # "Neural Net",
          "Gaussian Process",
          "Decision Tree", "Random Forest", "AdaBoost",
          "Naive Bayes", "QDA"]
 classifiers = [
-    # KNeighborsClassifier(3),
-    # SVC(kernel="linear", C=0.025),
-    # SVC(gamma=2, C=1),
+    KNeighborsClassifier(3),
+    SVC(kernel="linear", C=0.025),
+    SVC(gamma=2, C=1),
     # MLPClassifier(alpha=1),
     GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
     DecisionTreeClassifier(max_depth=5),
