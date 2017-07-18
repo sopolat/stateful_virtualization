@@ -54,12 +54,12 @@ for i in range(number_of_traces):
             request_types.append('service/delete/')
 
             if len(services) > 0:
-                service_to_be_deleted = random.randint(0, 10)
+                service_to_be_deleted = random.randint(0, len(services) - 1)
                 delete_id = services[service_to_be_deleted]['id']
                 response_data.append(['OK'])
                 services.remove(services[service_to_be_deleted])
             else:
-                delete_id = random.randint(0, 5)
+                delete_id = random.randint(0, 2)
                 response_data.append(['ERROR'])
 
             payload = []
@@ -117,14 +117,12 @@ for i in range(number_of_traces):
             response_data.append(['OK'])
             services.remove(services[service_to_be_deleted])
         else:
-            delete_id = random.randint(0, 5)
+            delete_id = random.randint(0, 2)
             response_data.append(['ERROR'])
 
         payload = []
         payload.append(delete_id)
         request_data.append(payload)
-
-
 
     request_types_list.append(request_types)
     request_data_list.append(request_data)
