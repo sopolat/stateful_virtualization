@@ -110,7 +110,7 @@ def get_unique_data(req_type, request_types_list, data_list):
 #######################################
 
 #Crete data first
-cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1]
+cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1] + ' ' + sys.argv[2]
 os.system(cmd)
 
 traces = open('ml_service_traces', 'rb')
@@ -186,7 +186,7 @@ for name, clf in zip(names, classifiers):
     # classifier = multi_target_forest.fit(datapoints, outputs)
 
     print name
-    CROSS_VAL_SIZE = int(sys.argv[2])
+    CROSS_VAL_SIZE = int(sys.argv[3])
     outfile = file('outfile_ml'+name, 'w')
     outfile.write('Out Predicted')
     outfile.write('\n')

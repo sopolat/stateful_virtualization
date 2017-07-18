@@ -1,8 +1,9 @@
 
 import random
+import sys 
 
-number_of_traces = 1000
-trace_size = 9
+number_of_traces = sys.argv[1]
+trace_size = = sys.argv[2]
 limit = 5
 operation_to_be_trained = 'delete'
  
