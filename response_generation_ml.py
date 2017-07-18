@@ -166,17 +166,18 @@ for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
 
-names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
+names = [#"Nearest Neighbors", "Linear SVM", "RBF SVM", "Neural Net",
+         "Gaussian Process",
          "Decision Tree", "Random Forest", "AdaBoost",
          "Naive Bayes", "QDA"]
 classifiers = [
-    KNeighborsClassifier(3),
-    SVC(kernel="linear", C=0.025),
-    SVC(gamma=2, C=1),
+    # KNeighborsClassifier(3),
+    # SVC(kernel="linear", C=0.025),
+    # SVC(gamma=2, C=1),
+    # MLPClassifier(alpha=1),
     GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
     DecisionTreeClassifier(max_depth=5),
     RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-    # MLPClassifier(alpha=1),
     AdaBoostClassifier(),
     GaussianNB(),
     QuadraticDiscriminantAnalysis()]
@@ -190,38 +191,43 @@ for name, clf in zip(names, classifiers):
     # multi_target_forest = MultiOutputRegressor(mlp)
     # classifier = multi_target_forest.fit(datapoints, outputs)
 
+    print name
+    CROSS_VAL_SIZE = int(sys.argv[2])
     outfile = file('outfile_ml'+name, 'w')
     outfile.write('Out Predicted')
     outfile.write('\n')
     wrong_guess_counter = 0
     #Read cross val size from the user input
-    CROSS_VAL_SIZE = int(sys.argv[2])
-    for k in range(total_length/CROSS_VAL_SIZE):
-        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
-                outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
-        print 'fitted'
-        #######################################
-        ##############TEST PART################
-        #######################################
+    try:
+        for k in range(total_length/CROSS_VAL_SIZE):
+            clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
+                    outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
+            print 'fitted'
+            #######################################
+            ##############TEST PART################
+            #######################################
 
-        for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
-            datap = np.array(datapoints[i]).reshape(1, -1)
-            predicted = clf.predict(datap)
-            # print outputs[i]
-            # print predicted
-            if outputs[i] != predicted.tolist()[0] :
-                wrong_guess_counter += 1
+            for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
+                datap = np.array(datapoints[i]).reshape(1, -1)
+                predicted = clf.predict(datap)
+                # print outputs[i]
+                # print predicted
+                if outputs[i] != predicted.tolist()[0] :
+                    wrong_guess_counter += 1
 
-            outfile.write(str(outputs[i]) + ' ' + str(predicted))
-            outfile.write('\n')
-            # print str(outputs[i])  + ' ' + str(predicted)# true response vs
-            # predicted
+                outfile.write(str(outputs[i]) + ' ' + str(predicted))
+                outfile.write('\n')
+                # print str(outputs[i])  + ' ' + str(predicted)# true response vs
+                # predicted
 
-    outfile.write('\n')
-    outfile.write(str(wrong_guess_counter))
-    print name
-    print wrong_guess_counter
-# real_out = []
+        outfile.write('\n')
+        outfile.write(str(wrong_guess_counter))
+        print wrong_guess_counter
+
+    except:
+        outfile.write('Error Happened.')
+    outfile.close()
+    # real_out = []
 # for p in predicted[0]:
 #     if p > 0.08:
 #         real_out.append(1)
