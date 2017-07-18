@@ -169,7 +169,7 @@ classifiers = [
     QuadraticDiscriminantAnalysis()]
 
 print 'train is over. test starts here.'
-for name, clf in zip(names, classifiers)
+for name, clf in zip(names, classifiers):
     # clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
     #                     random_state=1, activation='logistic', max_iter=1000)
 
