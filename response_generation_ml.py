@@ -15,6 +15,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 import json
 import sys
+import os 
 
 def one_hot_encoder(type, request_types_list, request_data_list, response_data_list,
                     request_types, request_data, response_data, unique_req_types):
@@ -116,6 +117,10 @@ def uniq(corresponding_data):
 ############TRAINING PART##############
 #######################################
 
+#Crete data first
+cmd = 'python data_creator_add_delete.py' + sys.argv[1]
+os.system(cmd)
+
 traces = open('ml_service_traces', 'rb')
 data = json.load(traces)
 
@@ -189,8 +194,9 @@ for name, clf in zip(names, classifiers):
     outfile.write('Out Predicted')
     outfile.write('\n')
     wrong_guess_counter = 0
-    CROSS_VAL_SIZE = 20
-    for k in range(10):
+    #Read cross val size from the user input
+    CROSS_VAL_SIZE = int(sys.argv[2])
+    for k in range(total_length/CROSS_VAL_SIZE):
         clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
                 outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
         print 'fitted'
