@@ -3,7 +3,7 @@ import random
 import sys 
 
 number_of_traces = sys.argv[1]
-trace_size = = sys.argv[2]
+trace_size = sys.argv[2]
 limit = 5
 operation_to_be_trained = 'delete'
  
@@ -18,7 +18,7 @@ for i in range(number_of_traces):
 
     id_counter = 1
     services = []
-    for j in range(trace_size):
+    for j in range(trace_size-1):
         rand_number = random.randint(0, 2)
         used_ids = []
         if rand_number == 0:
