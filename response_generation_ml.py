@@ -4,7 +4,15 @@ Response generation with machine learning. Data preperation.
 '''
 import numpy as np
 from sklearn.neural_network import MLPClassifier, MLPRegressor
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
 import json
 import sys
 
@@ -154,7 +162,7 @@ for i in range(len(datapoints)):
     datapoints[i] = datapoint_resized
 
 names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
-         "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
+         "Decision Tree", "Random Forest", "AdaBoost",
          "Naive Bayes", "QDA"]
 classifiers = [
     KNeighborsClassifier(3),
@@ -163,7 +171,7 @@ classifiers = [
     GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
     DecisionTreeClassifier(max_depth=5),
     RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-    MLPClassifier(alpha=1),
+    # MLPClassifier(alpha=1),
     AdaBoostClassifier(),
     GaussianNB(),
     QuadraticDiscriminantAnalysis()]

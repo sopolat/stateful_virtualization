@@ -1,8 +1,8 @@
 
 import random
 
-number_of_traces = 200
-trace_size = 11
+number_of_traces = 1000
+trace_size = 9
 limit = 5
 operation_to_be_trained = 'delete'
  
