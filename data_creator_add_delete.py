@@ -1,7 +1,7 @@
 
 import random
 
-number_of_traces = 1000
+number_of_traces = 200
 trace_size = 11
 limit = 5
 operation_to_be_trained = 'delete'
@@ -18,7 +18,7 @@ for i in range(number_of_traces):
     id_counter = 1
     services = []
     for j in range(trace_size):
-        rand_number = random.randint(0, 1)
+        rand_number = random.randint(0, 2)
         used_ids = []
         if rand_number == 0:
             request_types.append('service/add/')

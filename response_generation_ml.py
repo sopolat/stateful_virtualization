@@ -4,7 +4,7 @@ Response generation with machine learning. Data preperation.
 '''
 import numpy as np
 from sklearn.neural_network import MLPClassifier, MLPRegressor
-# from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier
 import json
 import sys
 
@@ -33,13 +33,11 @@ def one_hot_encoder(type, request_types_list, request_data_list, response_data_l
 
         unique_corresponding_req_data = get_unique_data(
             req_type, request_types_list, request_data_list)
-        if req_type == 'updateName':
-            encoded_data += [unique_corresponding_req_data.index(req_data[0])]
-        else:    
-            for data in req_data:
-                part_datapoint = [0] * len(unique_corresponding_req_data)
-                part_datapoint[unique_corresponding_req_data.index(data)] = 1
-                encoded_data += part_datapoint
+ 
+        for data in req_data:
+            part_datapoint = [0] * len(unique_corresponding_req_data)
+            part_datapoint[unique_corresponding_req_data.index(data)] = 1
+            encoded_data += part_datapoint
 
         unique_corresponding_res_data = get_unique_data(
             req_type, request_types_list, response_data_list)
@@ -47,14 +45,8 @@ def one_hot_encoder(type, request_types_list, request_data_list, response_data_l
             part_datapoint = [0] * len(unique_corresponding_res_data)
             part_datapoint[unique_corresponding_res_data.index(data)] = 1
 
-            if j == len(request_types) - 1 and res_data.index(data) == 0:
-                unique_corresponding_req_data = get_unique_data(
-                    "updateName", request_types_list, request_data_list)
-                # unique_corresponding_req_data.sort()
-                # print data
-                # print res_data
-                # print unique_corresponding_req_data
-                encoded_ouput = output_encoder(unique_corresponding_req_data, request_data, data)
+            if j == len(request_types) - 1:
+                encoded_ouput = part_datapoint[0]
             else:
                 encoded_data += part_datapoint
 
@@ -96,17 +88,27 @@ def get_unique_data(req_type, request_types_list, data_list):
         part_corresponding_data_flat = [
             item for sublist in part_corresponding_data for item in sublist]
         corresponding_data += part_corresponding_data_flat
-    # print corresponding_data
-    unique_corresponding_data = list(set(corresponding_data))
+
+    if isinstance(corresponding_data[0], list):
+        unique_corresponding_data = list(uniq(corresponding_data))
+    else:
+        unique_corresponding_data = list(set(corresponding_data))
 
     return unique_corresponding_data
 
+def uniq(corresponding_data):
+    last = object()
+    for item in corresponding_data:
+        if item == last:
+            continue
+        yield item
+        last = item
 
 #######################################
 ############TRAINING PART##############
 #######################################
 
-traces = open('ml_traces', 'rb')
+traces = open('ml_service_traces', 'rb')
 data = json.load(traces)
 
 request_types_list = data['request_types']
@@ -138,8 +140,8 @@ for i in range(total_length):
     datapoint, output = one_hot_encoder('train',
                                         request_types_list, request_data_list,  response_data_list,
                                         request_types, request_data, response_data, unique_req_types)
-    print datapoint
-    print output 
+    # print datapoint
+    # print output 
     datapoints.append(datapoint)
     outputs.append(output)
     print i
@@ -151,43 +153,60 @@ for i in range(len(datapoints)):
     datapoint_resized = datapoints[i] + [0] * (max_len - len(datapoints[i]))
     datapoints[i] = datapoint_resized
 
-mlp = MLPRegressor(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
-                    random_state=1, activation='logistic', max_iter=1000)
+names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
+         "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
+         "Naive Bayes", "QDA"]
+classifiers = [
+    KNeighborsClassifier(3),
+    SVC(kernel="linear", C=0.025),
+    SVC(gamma=2, C=1),
+    GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
+    DecisionTreeClassifier(max_depth=5),
+    RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+    MLPClassifier(alpha=1),
+    AdaBoostClassifier(),
+    GaussianNB(),
+    QuadraticDiscriminantAnalysis()]
 
-# multi_target_forest = MultiOutputRegressor(mlp)
-# classifier = multi_target_forest.fit(datapoints, outputs)
-
-# print len(datapoints)
-# print len(outputs)
 print 'train is over. test starts here.'
+for name, clf in zip(names, classifiers)
+    # clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, ),
+    #                     random_state=1, activation='logistic', max_iter=1000)
 
-outfile = file('outfile_ml', 'w')
-outfile.write('Out Predicted')
-outfile.write('\n')
-wrong_guess_counter = 0
-CROSS_VAL_SIZE = 20
-for k in range(10):
-    mlp.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
-            outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
-    print 'fitted'
-    #######################################
-    ##############TEST PART################
-    #######################################
+    # clf = AdaBoostClassifier()
+    # multi_target_forest = MultiOutputRegressor(mlp)
+    # classifier = multi_target_forest.fit(datapoints, outputs)
 
-    for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
-        datap = np.array(datapoints[i]).reshape(1, -1)
-        predicted = mlp.predict(datap)
-        # print outputs[i]
-        # print predicted
-        if outputs[i] != predicted.tolist()[0] :
-            wrong_guess_counter += 1
+    outfile = file('outfile_ml'+name, 'w')
+    outfile.write('Out Predicted')
+    outfile.write('\n')
+    wrong_guess_counter = 0
+    CROSS_VAL_SIZE = 20
+    for k in range(10):
+        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
+                outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
+        print 'fitted'
+        #######################################
+        ##############TEST PART################
+        #######################################
 
-        outfile.write(str(outputs[i]) + ' ' + str(predicted))
-        outfile.write('\n')
-        # print str(outputs[i])  + ' ' + str(predicted)# true response vs
-        # predicted
+        for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
+            datap = np.array(datapoints[i]).reshape(1, -1)
+            predicted = clf.predict(datap)
+            # print outputs[i]
+            # print predicted
+            if outputs[i] != predicted.tolist()[0] :
+                wrong_guess_counter += 1
 
-print wrong_guess_counter
+            outfile.write(str(outputs[i]) + ' ' + str(predicted))
+            outfile.write('\n')
+            # print str(outputs[i])  + ' ' + str(predicted)# true response vs
+            # predicted
+
+    outfile.write('\n')
+    outfile.write(str(wrong_guess_counter))
+    print name
+    print wrong_guess_counter
 # real_out = []
 # for p in predicted[0]:
 #     if p > 0.08:
