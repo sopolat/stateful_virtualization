@@ -118,7 +118,7 @@ def uniq(corresponding_data):
 #######################################
 
 #Crete data first
-cmd = 'python data_creator_add_delete.py' + sys.argv[1]
+cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1]
 os.system(cmd)
 
 traces = open('ml_service_traces', 'rb')
