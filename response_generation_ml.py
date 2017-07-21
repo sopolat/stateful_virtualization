@@ -256,7 +256,7 @@ for name, clf in zip(names, classifiers):
 
     print name
     for k in range(total_length / CROSS_VAL_SIZE):
-        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
+        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:].tolist() + datapoints[:k * CROSS_VAL_SIZE].tolist(),
                 outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
         print 'fitted'
         #######################################
