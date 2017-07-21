@@ -226,7 +226,8 @@ for i in range(total_length):
     datapoints.append(datapoint)
     outputs.append(output)
     print i
-
+fout.close()
+exit()
 datapoints = PCA(n_components=200).fit_transform(datapoints)
 print 'data reduced (PCA)'
 fw.close()  
