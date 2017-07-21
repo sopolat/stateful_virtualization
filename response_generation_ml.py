@@ -112,7 +112,8 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            encoded_output = request_types.count('updateName')
+            encoded_output = [0] * 4
+            encoded_output[request_types.count('updateName')] = 1
             fw.write(str(encoded_output))
         else:
             encoded_data += part_datapoint
