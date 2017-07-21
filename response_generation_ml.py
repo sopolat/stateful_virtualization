@@ -73,7 +73,7 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
 
 
 fw = open('debug_datapoint', 'w')
-
+fout = open('outstemp', 'w')
 
 def one_hot_encoder(req_type_datapoint_dict,
         req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len,
@@ -113,7 +113,9 @@ def one_hot_encoder(req_type_datapoint_dict,
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
             encoded_output = [0] * 4
-            encoded_output[request_types.count('updateName')] = 1
+            encoded_output = request_types.count('updateName') 
+            fout.write(str(encoded_output))
+            fout.write('\n')
             fw.write(str(encoded_output))
         else:
             encoded_data += part_datapoint
