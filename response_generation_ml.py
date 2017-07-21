@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
+from sklearn.decomposition import PCA
 import json
 import sys
 import os 
@@ -224,6 +224,8 @@ for i in range(total_length):
     outputs.append(output)
     print i
 
+datapoints = PCA(n_components=200).fit_transform(datapoints)
+print 'data reduced (PCA)'
 fw.close()  
 
 names = ["Nearest Neighbors", "Linear SVM", "RBF SVM",  # "Neural Net",
