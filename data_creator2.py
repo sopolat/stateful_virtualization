@@ -8,7 +8,7 @@ Created on Fri Jun 09 10:52:54 2017
 import names
 import random
 import string
-
+import sys
 
 funs=[15,10,28,44,50,3,30,33]
 loginTokens = {}
@@ -25,7 +25,7 @@ secure_random = random.SystemRandom()
 typeList = []
 reqList = []
 resList = []
-for i in range(200):
+for i in range(int(sys.argv[1])):
     requestTypes = []
     requests = []
     responses = []
@@ -53,12 +53,12 @@ for i in range(200):
     requests.insert(0, request)
     responses.insert(0, response)
     
-    for j in range(8):
+    for j in range(int(sys.argv[2])):
         func = secure_random.randint(1, 60)
         if func not in range(1, 21) and "updateName" not in requestTypes and j == 7:
             func = 10
-        while func in range(1, 21) and "updateName" in requestTypes:
-            func = secure_random.randint(1, 60)
+        # while func in range(1, 21) and "updateName" in requestTypes:
+        #     func = secure_random.randint(1, 60)
 
         # func = funs[j]
         request =[]
