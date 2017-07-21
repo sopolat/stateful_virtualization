@@ -55,10 +55,10 @@ for i in range(int(sys.argv[1])):
     
     for j in range(int(sys.argv[2])):
         func = secure_random.randint(1, 60)
-        if func not in range(1, 21) and "updateName" not in requestTypes and j == 7:
-            func = 10
-        # while func in range(1, 21) and "updateName" in requestTypes:
-        #     func = secure_random.randint(1, 60)
+        # if func not in range(1, 21) and "updateName" not in requestTypes and j == 7:
+        #     func = 10
+        while func in range(1, 21) and requestTypes.count("updateName") == 3 :
+            func = secure_random.randint(1, 60)
 
         # func = funs[j]
         request =[]
