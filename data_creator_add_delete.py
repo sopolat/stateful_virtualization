@@ -12,6 +12,7 @@ request_data_list = []
 response_data_list = []
 traces = {}
 for i in range(number_of_traces):
+    is_list = False
     request_types = []
     request_data = []
     response_data = []
@@ -20,6 +21,9 @@ for i in range(number_of_traces):
     services = []
     for j in range(trace_size-1):
         rand_number = random.randint(0, 2)
+        # while rand_number == 2 and is_list:
+        #     rand_number = random.randint(0, 2)
+
         used_ids = []
         if rand_number == 0:
             request_types.append('service/add/')
@@ -67,6 +71,7 @@ for i in range(number_of_traces):
             request_data.append(payload)
 
         if rand_number == 2:
+            is_list = True
             request_types.append('service/list/')
 
             payload = []
