@@ -247,7 +247,7 @@ print 'train is over. test starts here.'
 for name, clf in zip(names, classifiers):
 
     CROSS_VAL_SIZE = int(sys.argv[3])
-    outfile = file('outfile_ml', 'w')
+    outfile = file('outfile_ml' + name, 'w')
     outfile.write('Out Predicted')
     outfile.write('\n')
     wrong_guess_counter = 0
@@ -274,6 +274,8 @@ for name, clf in zip(names, classifiers):
             # print str(outputs[i])  + ' ' + str(predicted)# true response vs
             # predicted
 
+        outfile.write('\n')
+        outfile.write(str(wrong_guess_counter))
     print wrong_guess_counter
 # real_out = []
 # for p in predicted[0]:
