@@ -27,9 +27,9 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
 
     req_type_datapoint_dict = {}
     for req_type in unique_req_types:
-        # part_datapoint = [0] * len(unique_req_types)
-        # part_datapoint[unique_req_types.index(req_type)] = -1
-        part_datapoint = [unique_req_types.index(req_type) + 1]
+        part_datapoint = [0] * len(unique_req_types)
+        part_datapoint[unique_req_types.index(req_type)] = -1
+        # part_datapoint = [unique_req_types.index(req_type) + 1]
         req_type_datapoint_dict[req_type] = part_datapoint
 
     req_data_datapoint_dict = {}
