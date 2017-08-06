@@ -5,7 +5,7 @@ import sys
 number_of_traces = int(sys.argv[1])
 trace_size = int(sys.argv[2])
 limit = 5
-operation_to_be_trained = 'delete'
+operation_to_be_trained = 'dummy'
  
 request_types_list = []
 request_data_list = []
@@ -20,7 +20,7 @@ for i in range(number_of_traces):
     id_counter = 1
     services = []
     for j in range(trace_size-1):
-        rand_number = random.randint(0, 2)
+        rand_number = random.randint(0, 3)
         # while rand_number == 2 and is_list:
         #     rand_number = random.randint(0, 2)
 
@@ -84,6 +84,21 @@ for i in range(number_of_traces):
             response_data.append(serv_list)
 
 
+        if rand_number == 3:
+            request_types.append('service/dummy/')
+
+            payload = []
+
+            sec_rand = random.randint(0, 1)
+            if sec_rand == 0:
+                payload.append("naber")
+                request_data.append(payload) 
+                response_data.append(['iyidir'])
+            else:
+                payload.append("howareyou")
+                request_data.append(payload) 
+                response_data.append(['fine'])
+
     if operation_to_be_trained == 'add':
 
         request_types.append('service/add/')
@@ -128,6 +143,22 @@ for i in range(number_of_traces):
         payload = []
         payload.append(delete_id)
         request_data.append(payload)
+
+
+    elif operation_to_be_trained == 'dummy':
+        request_types.append('service/dummy/')
+
+        payload = []
+
+        sec_rand = random.randint(0, 1)
+        if sec_rand == 0:
+            payload.append("naber")
+            request_data.append(payload) 
+            response_data.append(['iyidir'])
+        else:
+            payload.append("howareyou")
+            request_data.append(payload) 
+            response_data.append(['fine'])
 
     request_types_list.append(request_types)
     request_data_list.append(request_data)

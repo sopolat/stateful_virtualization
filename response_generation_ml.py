@@ -53,7 +53,6 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
     for req_type in unique_req_types:
         unique_corresponding_res_data = get_unique_data(
             req_type, request_types_list, response_data_list)
-        print '-----------------------------'
         unique_corresponding_res_data += [str([])]
         if len(unique_corresponding_res_data) > max_res_data_len:
             max_res_data_len = len(unique_corresponding_res_data)
@@ -66,11 +65,11 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
 
         value += (max_res_data_len - len(value)) * [0]
 
-    print req_type_datapoint_dict
-    print ''
-    print req_data_datapoint_dict
-    print ''
-    print res_data_datapoint_dict
+    # print req_type_datapoint_dict
+    # print ''
+    # print req_data_datapoint_dict
+    # print ''
+    # print res_data_datapoint_dict
     return req_type_datapoint_dict, req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len, max_res_data_len
 
 
@@ -113,7 +112,14 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            encoded_ouput = part_datapoint[0]
+            # elem_cnt = 0
+            # for m in range(len(request_types)):
+            #     if request_types[m] == 'service/add/' and response_data[m][0] == 'OK':
+            #         elem_cnt += 1
+            #     elif request_types[m] == 'service/delete/' and response_data[m][0] == 'OK' :
+            #         elem_cnt -= 1
+            # print elem_cnt
+            encoded_ouput = res_data[0] #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
@@ -176,7 +182,6 @@ def get_unique_data(req_type, request_types_list, data_list):
         for x in corresponding_data:
             if x not in unique_corresponding_data:
                 unique_corresponding_data.append(x)
-        print unique_corresponding_data
     else:
         unique_corresponding_data = list(set(corresponding_data))
     # print unique_corresponding_data
