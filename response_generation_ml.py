@@ -234,10 +234,9 @@ fout.close()
 # print 'data reduced (PCA)'
 fw.close()  
 
-names = ["Nearest Neighbors", "Linear SVM", "RBF SVM",  # "Neural Net",
-         "Gaussian Process",
-         "Decision Tree", "Random Forest", "AdaBoost",
-         "Naive Bayes", "QDA"]
+names = [#"Nearest Neighbors", "Naive Bayes", "QDA"
+         "Linear SVM", "Decision Tree",  "RBF SVM",  # "Neural Net", "Gaussian Process", "Random Forest", 
+         "AdaBoost"]
 classifiers = [
     KNeighborsClassifier(5),
     SVC(kernel="linear", C=0.025),
