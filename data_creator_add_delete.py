@@ -5,14 +5,13 @@ import sys
 number_of_traces = int(sys.argv[1])
 trace_size = int(sys.argv[2])
 limit = 5
-operation_to_be_trained = 'list'
+operation_to_be_trained = 'set'
  
 request_types_list = []
 request_data_list = []
 response_data_list = []
 traces = {}
 for i in range(number_of_traces):
-    is_list = False
     request_types = []
     request_data = []
     response_data = []
@@ -20,9 +19,7 @@ for i in range(number_of_traces):
     id_counter = 1
     services = []
     for j in range(trace_size-1):
-        rand_number = random.randint(0, 2)
-        # while rand_number == 2 and is_list:
-        #     rand_number = random.randint(0, 2)
+        rand_number = random.randint(0, 3)
 
         used_ids = []
         if rand_number == 0:
@@ -71,7 +68,6 @@ for i in range(number_of_traces):
             request_data.append(payload)
 
         if rand_number == 2:
-            is_list = True
             request_types.append('service/list/')
 
             payload = []
@@ -82,6 +78,16 @@ for i in range(number_of_traces):
             for serv in services:
                 serv_list.append(serv.values())    
             response_data.append(serv_list)
+
+        if rand_number == 3:
+            name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+            request_types.append('service/set/')
+
+            payload = []
+            payload.append(random.choice(name_list))
+
+            request_data.append(payload)  
+            response_data.append(['OK'])
 
 
     if operation_to_be_trained == 'add':
@@ -128,6 +134,16 @@ for i in range(number_of_traces):
         payload = []
         payload.append(delete_id)
         request_data.append(payload)
+
+    elif operation_to_be_trained == 'set':
+        name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+        request_types.insert(0, 'service/set/')
+
+        payload = []
+        payload.append(random.choice(name_list))
+
+        request_data.insert(0, payload)  
+        response_data.insert(0, ['OK'])
 
     request_types_list.append(request_types)
     request_data_list.append(request_data)
