@@ -232,10 +232,10 @@ fw.close()
 # for i in range(len(datapoints)):
 #     print len(datapoints[i])
 
-names = ["Nearest Neighbors", "Linear SVM", "RBF SVM",  # "Neural Net",
-         "Gaussian Process",
-         "Decision Tree", "Random Forest", "AdaBoost",
-         "Naive Bayes", "QDA"]
+names = ["Linear SVM",  # "Neural Net", "Nearest Neighbors", "RBF SVM", "Random Forest", "Naive Bayes", "QDA"
+         "Decision Tree", "AdaBoost",
+         "Gaussian Process"
+         ]
 classifiers = [
     KNeighborsClassifier(3),
     SVC(kernel="linear", C=0.025),
