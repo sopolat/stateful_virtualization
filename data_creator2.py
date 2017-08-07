@@ -21,7 +21,9 @@ secure_random = random.SystemRandom()
 #        "".join(secure_random.choice(string.digits) for _ in range(8))
 #    loginTokens["".join(secure_random.choice(
 #        string.ascii_uppercase + string.digits) for _ in range(5))] = data
-    
+
+name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+surname_list = ['eniser','ergun']
 typeList = []
 reqList = []
 resList = []
@@ -73,7 +75,7 @@ for i in range(int(sys.argv[1])):
             loginId = idOf
         elif func in range(1, 21):
             # update name
-            updateData = names.get_first_name()
+            updateData = random.choice(name_list)#names.get_first_name()
             # print updateData
             requestTypes.append("updateName")
             
@@ -88,7 +90,7 @@ for i in range(int(sys.argv[1])):
         elif func in range(21, 41):
             # updateSurname
             requestTypes.append("updateSurname")
-            updateData = names.get_last_name()
+            updateData = random.choice(surname_list) #names.get_last_name()
             request.append(updateData)
             if 1==0:#func%10 == 0:
                 response.append( "error")
@@ -101,7 +103,7 @@ for i in range(int(sys.argv[1])):
             # updateTel
             requestTypes.append("updateTel")
             updateData = "054" + \
-                "".join(secure_random.choice(string.digits) for _ in range(8))
+                "".join(secure_random.choice(string.digits) for _ in range(1))
             request.append( updateData)
             if 1==0:#func%10 == 0:
                 response.append("error")
@@ -147,28 +149,20 @@ for i in range(int(sys.argv[1])):
         requests.append(request)
         responses.append(response)
 
-    # from sklearn.utils import shuffle
-    # requestTypes_s, requests_s, responses_s = shuffle(requestTypes[1:], requests[1:], responses[1:])
-    # requestTypes_s.insert(0,requestTypes[0])
-    # requests_s.insert(0,requests[0])
-    # responses_s.insert(0,responses[0])
-    # requestTypes = requestTypes_s
-    # requests = requests_s
-    # responses = responses_s
-
-    request =[]
-    response = []
-    requestTypes.append("who")
-    request.append("")
-    response.append(loginTokens[loginId]["name"])
-    response.append(loginTokens[loginId]["surname"])
-    response.append(loginTokens[loginId]["tel"])
-    requests.append(request)
-    responses.append(response)
+    # request =[]
+    # response = []
+    # requestTypes.append("who")
+    # request.append("")
+    # response.append(loginTokens[loginId]["name"])
+    # response.append(loginTokens[loginId]["surname"])
+    # response.append(loginTokens[loginId]["tel"])
+    # requests.append(request)
+    # responses.append(response)
     typeList.append(requestTypes)
     reqList.append(requests)
     resList.append(responses)
 
+print 'ML'
 file = open('ml_traces', 'w')
 file.write('{')
 file.write('\n\"request_types\" : ')

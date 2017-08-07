@@ -89,12 +89,13 @@ def one_hot_encoder(req_type_datapoint_dict,
         res_data = response_data[j]
 
         part_datapoint = req_type_datapoint_dict[req_type]
-        encoded_data += part_datapoint
-
+        
+        encoded_data += [part_datapoint.index(-1) + 1]
+        # print encoded_data
         # print 'REQ TYPE ' + str(j) + ':'
         # print part_datapoint
         fw.write(req_type)
-        fw.write(str(part_datapoint))
+        fw.write(str([part_datapoint.index(-1) + 1]))
         fw.write(str(len(encoded_data)))
         fw.write('-')
         # for data in req_data:
@@ -187,6 +188,8 @@ def get_unique_data(req_type, request_types_list, data_list):
 #######################################
 ############TRAINING PART##############
 #######################################
+
+print 'yes'
 cmd = 'python2 data_creator2.py ' + sys.argv[1] + ' ' + sys.argv[2]
 os.system(cmd)
 
@@ -203,7 +206,6 @@ response_data_list = data['response_data']
 req_type_datapoint_dict, req_data_datapoint_dict, \
 res_data_datapoint_dict, max_req_data_len, max_res_data_len = \
 pre_process_data(request_types_list, request_data_list, response_data_list)
-
 # unique_req_types = list(set(
 #     [req_type for request_types in request_types_list
 #      for req_type in request_types]))
@@ -227,9 +229,9 @@ for i in range(total_length):
     outputs.append(output)
     print i
 fout.close()
-exit()
-datapoints = PCA(n_components=200).fit_transform(datapoints)
-print 'data reduced (PCA)'
+# exit()
+# datapoints = PCA(n_components=200).fit_transform(datapoints)
+# print 'data reduced (PCA)'
 fw.close()  
 
 names = ["Nearest Neighbors", "Linear SVM", "RBF SVM",  # "Neural Net",
@@ -260,7 +262,7 @@ for name, clf in zip(names, classifiers):
 
     print name
     for k in range(total_length / CROSS_VAL_SIZE):
-        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:].tolist() + datapoints[:k * CROSS_VAL_SIZE].tolist(),
+        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:]+ datapoints[:k * CROSS_VAL_SIZE],
                 outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
         print 'fitted'
         #######################################
