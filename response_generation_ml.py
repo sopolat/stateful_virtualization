@@ -113,7 +113,7 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            encoded_ouput = part_datapoint[0]
+            encoded_ouput = len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 

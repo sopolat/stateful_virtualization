@@ -5,7 +5,7 @@ import sys
 number_of_traces = int(sys.argv[1])
 trace_size = int(sys.argv[2])
 limit = 5
-operation_to_be_trained = 'delete'
+operation_to_be_trained = 'list'
  
 request_types_list = []
 request_data_list = []
