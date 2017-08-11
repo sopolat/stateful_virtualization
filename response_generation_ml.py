@@ -113,17 +113,11 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            # last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput = res_data #request_types.count('service/add/') #req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #len(res_data) #part_datapoint[0]
+            last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
+            encoded_ouput =  req_data_datapoint_dict[('service/set/', str(request_data[last_set]))].index(-1) #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
-        # print 'RES DATA ' + str(j)
-        # print part_datapoint
-
-        # if res_data == []:
-        #     encoded_data += part_datapoint
-        #     part_datapoint = res_data_datapoint_dict[(req_type, str([]))]
         fw.write(str(part_datapoint))
         fw.write(str(len(encoded_data)))
         fw.write(' ')
@@ -231,26 +225,31 @@ for i in range(total_length):
         max_len = len(datapoint)
 fw.close()
 
-datapoints = list(PCA(n_components=100).fit_transform(datapoints))
-print 'data reduced (PCA)'
+# datapoints = list(PCA(n_components=100).fit_transform(datapoints))
+# print 'data reduced (PCA)'
 
-names = ["Decision Tree", 
-         "Linear SVM",  # "Neural Net", "Nearest Neighbors", "RBF SVM", 
-         "Random Forest", #"Naive Bayes", "QDA"
-         #"AdaBoost",
-         #"Gaussian Process"
+names = [
+        #"Decision Tree", 
+         "Linear SVM",  # 
+         # "Neural Net", #"Nearest Neighbors", 
+         # "RBF SVM", 
+         # "Random Forest", #"Naive Bayes", "QDA"
+         # "AdaBoost",
+         # "Gaussian Process"
          ]
 classifiers = [
-    KNeighborsClassifier(3),
+    # KNeighborsClassifier(3),
+    # DecisionTreeClassifier(max_depth=5),
     SVC(kernel="linear", C=0.025),
-    SVC(gamma=2, C=1),
+    # SVC(gamma=2, C=1),
     # MLPClassifier(alpha=1),
-    GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
-    DecisionTreeClassifier(max_depth=5),
-    RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-    AdaBoostClassifier(),
-    GaussianNB(),
-    QuadraticDiscriminantAnalysis()]
+    # GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
+    # RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+    # AdaBoostClassifier(),
+    # GaussianNB(),
+    # QuadraticDiscriminantAnalysis()
+    ]
+
 
 print 'train is over. test starts here.'
 for name, clf in zip(names, classifiers):
@@ -297,14 +296,3 @@ for name, clf in zip(names, classifiers):
     # except:
     #     outfile.write('Error Happened.')
     outfile.close()
-    # real_out = []
-# for p in predicted[0]:
-#     if p > 0.08:
-#         real_out.append(1)
-#     else:
-#         real_out.append(0)
-# print '----------------'
-# print outputs[-1]
-# print real_out
-
-# print predicted
