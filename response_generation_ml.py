@@ -12,6 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.decomposition import PCA
 
 import json
 import sys
@@ -112,8 +113,8 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput = request_types.count('service/add/') #req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #len(res_data) #part_datapoint[0]
+            # last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
+            encoded_ouput = res_data #request_types.count('service/add/') #req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
@@ -229,12 +230,15 @@ for i in range(total_length):
     if len(datapoint) > max_len:
         max_len = len(datapoint)
 fw.close()
-# for i in range(len(datapoints)):
-#     print len(datapoints[i])
 
-names = ["Linear SVM",  # "Neural Net", "Nearest Neighbors", "RBF SVM", "Random Forest", "Naive Bayes", "QDA"
-         "Decision Tree", "AdaBoost",
-         "Gaussian Process"
+datapoints = list(PCA(n_components=100).fit_transform(datapoints))
+print 'data reduced (PCA)'
+
+names = ["Decision Tree", 
+         "Linear SVM",  # "Neural Net", "Nearest Neighbors", "RBF SVM", 
+         "Random Forest", #"Naive Bayes", "QDA"
+         #"AdaBoost",
+         #"Gaussian Process"
          ]
 classifiers = [
     KNeighborsClassifier(3),
@@ -258,40 +262,40 @@ for name, clf in zip(names, classifiers):
     # classifier = multi_target_forest.fit(datapoints, outputs)
 
     print name
+    # Read cross val size from the user input
     CROSS_VAL_SIZE = int(sys.argv[3])
     outfile = file('outfile_ml' + name, 'w')
     outfile.write('Out Predicted')
     outfile.write('\n')
     wrong_guess_counter = 0
-    # Read cross val size from the user input
-    try:
-        for k in range(total_length / CROSS_VAL_SIZE):
-            clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
-                    outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
-            print 'fitted'
-            #######################################
-            ##############TEST PART################
-            #######################################
+    # try:
+    for k in range(total_length / CROSS_VAL_SIZE):
+        clf.fit(datapoints[(k + 1) * CROSS_VAL_SIZE:] + datapoints[:k * CROSS_VAL_SIZE],
+                outputs[(k + 1) * CROSS_VAL_SIZE:] + outputs[:k * CROSS_VAL_SIZE])
+        print 'fitted'
+        #######################################
+        ##############TEST PART################
+        #######################################
 
-            for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
-                datap = np.array(datapoints[i]).reshape(1, -1)
-                predicted = clf.predict(datap)
-                # print outputs[i]
-                # print predicted
-                if outputs[i] != predicted.tolist()[0]:
-                    wrong_guess_counter += 1
+        for i in range((k * CROSS_VAL_SIZE), ((k + 1) * CROSS_VAL_SIZE)):
+            datap = np.array(datapoints[i]).reshape(1, -1)
+            predicted = clf.predict(datap)
+            # print outputs[i]
+            # print predicted
+            if outputs[i] != predicted.tolist()[0]:
+                wrong_guess_counter += 1
 
-                outfile.write(str(outputs[i]) + ' ' + str(predicted))
-                outfile.write('\n')
-                # print str(outputs[i])  + ' ' + str(predicted)# true response vs
-                # predicted
+            outfile.write(str(outputs[i]) + ' ' + str(predicted))
+            outfile.write('\n')
+            # print str(outputs[i])  + ' ' + str(predicted)# true response vs
+            # predicted
 
-        outfile.write('\n')
-        outfile.write(str(wrong_guess_counter))
-        print wrong_guess_counter
+    outfile.write('\n')
+    outfile.write(str(wrong_guess_counter))
+    print wrong_guess_counter
 
-    except:
-        outfile.write('Error Happened.')
+    # except:
+    #     outfile.write('Error Happened.')
     outfile.close()
     # real_out = []
 # for p in predicted[0]:

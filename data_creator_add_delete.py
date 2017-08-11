@@ -5,7 +5,7 @@ import sys
 number_of_traces = int(sys.argv[1])
 trace_size = int(sys.argv[2])
 limit = 5
-operation_to_be_trained = 'set'
+operation_to_be_trained = 'lenlist'
  
 request_types_list = []
 request_data_list = []
@@ -17,6 +17,7 @@ for i in range(number_of_traces):
     response_data = []
 
     id_counter = 1
+    len_list = 0
     services = []
     for j in range(trace_size-1):
         rand_number = random.randint(0, 3)
@@ -47,6 +48,7 @@ for i in range(number_of_traces):
                 used_ids.append(id_counter)
 
                 id_counter += 1
+                len_list += 1
 
             else:
                 response_data.append(['ERROR'])
@@ -59,6 +61,7 @@ for i in range(number_of_traces):
                 delete_id = services[service_to_be_deleted]['id']
                 response_data.append(['OK'])
                 services.remove(services[service_to_be_deleted])
+                len_list -= 1
             else:
                 delete_id = random.randint(0, 2)
                 response_data.append(['ERROR'])
@@ -144,6 +147,14 @@ for i in range(number_of_traces):
 
         request_data.insert(0, payload)  
         response_data.insert(0, ['OK'])
+
+
+    elif operation_to_be_trained == 'lenlist':
+        request_types.append('service/lenlist/')
+        payload = ['']
+
+        request_data.append(payload)  
+        response_data.append(len_list)
 
     request_types_list.append(request_types)
     request_data_list.append(request_data)
