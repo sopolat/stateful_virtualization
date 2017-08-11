@@ -80,7 +80,7 @@ for i in range(number_of_traces):
             response_data.append(serv_list)
 
         if rand_number == 3:
-            name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+            name_list = ['hasan', 'ferit', 'taha', 'kemal', 'recep', 'yusuf', 'ezgi', 'bilge']
             request_types.append('service/set/')
 
             payload = []
@@ -136,7 +136,7 @@ for i in range(number_of_traces):
         request_data.append(payload)
 
     elif operation_to_be_trained == 'set':
-        name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+        name_list = ['hasan', 'ferit', 'taha', 'kemal', 'recep', 'yusuf', 'ezgi', 'bilge']
         request_types.insert(0, 'service/set/')
 
         payload = []
