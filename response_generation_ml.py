@@ -114,7 +114,7 @@ def one_hot_encoder(req_type_datapoint_dict,
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
             last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput =  req_data_datapoint_dict[('service/set/', str(request_data[last_set]))].index(-1) #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
+            encoded_ouput =  req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
