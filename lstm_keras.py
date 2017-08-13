@@ -242,23 +242,23 @@ for iteration in range(1, LSTM_ITERATION):
 
     # Select 10 samples from the validation set at random so we can visualize
     # errors.
-    for i in range(5):
-        ind = np.random.randint(0, len(x_val))
-        rowx, rowy = x_val[np.array([ind])], y_val[np.array([ind])]
-        preds = model.predict_classes(rowx, verbose=0)
-        q = ctable.decode(rowx[0])
-        correct = ctable.decode(rowy[0])
-        guess = ctable.decode(preds[0], calc_argmax=False)
-        print('Q :', q)
-        print('A :', correct)
+    # for i in range(5):
+    ind = len(x_val)-1 # np.random.randint(0, len(x_val))
+    rowx, rowy = x_val[np.array([ind])], y_val[np.array([ind])]
+    preds = model.predict_classes(rowx, verbose=0)
+    q = ctable.decode(rowx[0])
+    correct = ctable.decode(rowy[0])
+    guess = ctable.decode(preds[0], calc_argmax=False)
+    print('Q :', q)
+    print('A :', correct)
 
-        if correct == guess:
-            print(colors.ok + '☑' + colors.close, end=" ")
-        else:
-            print(colors.fail + '☒' + colors.close, end=" ")
+    if correct == guess:
+        print(colors.ok + '☑' + colors.close, end=" ")
+    else:
+        print(colors.fail + '☒' + colors.close, end=" ")
 
-        print(guess)
-        print('------------')
+    print(guess)
+    print('------------')
 
     # time.sleep(2)
 model.save('stateful_user_data_new_format.h5')
