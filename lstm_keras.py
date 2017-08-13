@@ -195,7 +195,7 @@ print(y_val.shape)
 # Try replacing GRU, or SimpleRNN.
 RNN = layers.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 LAYERS = 2
 LSTM_ITERATION = 1000
 
@@ -261,4 +261,4 @@ for iteration in range(1, LSTM_ITERATION):
         print('------------')
 
     # time.sleep(2)
-model.save('stateful_user_data.h5')
+model.save('stateful_user_data_new_format.h5')
