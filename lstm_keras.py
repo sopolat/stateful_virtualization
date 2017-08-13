@@ -54,7 +54,7 @@ def mapper(month):
     return months_map.get(month, "OCA")
 
 def read_stateful_user_data():
-    fr = open("ml_traces_lstm", 'r')
+    fr = open("lstm_format_data_file", 'r')
     max_len_req = 0
     max_len_res = 0
     requests = []
