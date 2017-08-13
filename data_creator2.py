@@ -22,7 +22,7 @@ secure_random = random.SystemRandom()
 #    loginTokens["".join(secure_random.choice(
 #        string.ascii_uppercase + string.digits) for _ in range(5))] = data
 
-name_list = ['hasan', 'ferit', 'taha', 'tayyip', 'recep', 'yusuf', 'ezgi', 'bilge']
+name_list = ['hasan', 'ferit', 'taha', 'tahir', 'recep', 'yusuf', 'ezgi', 'bilge']
 surname_list = ['eniser','ergun']
 typeList = []
 reqList = []
@@ -80,7 +80,7 @@ for i in range(int(sys.argv[1])):
             requestTypes.append("updateName")
             
             request.append(updateData)
-            if 1==0:#func%10 == 0:
+            if func < 5:
                 response.append("error")
             else:
                 data = loginTokens[loginId]
@@ -92,7 +92,7 @@ for i in range(int(sys.argv[1])):
             requestTypes.append("updateSurname")
             updateData = random.choice(surname_list) #names.get_last_name()
             request.append(updateData)
-            if 1==0:#func%10 == 0:
+            if func < 25:
                 response.append( "error")
             else:
                 data = loginTokens[loginId]
@@ -105,7 +105,7 @@ for i in range(int(sys.argv[1])):
             updateData = "054" + \
                 "".join(secure_random.choice(string.digits) for _ in range(1))
             request.append( updateData)
-            if 1==0:#func%10 == 0:
+            if func < 45:
                 response.append("error")
             else:
                 data = loginTokens[loginId]
@@ -149,15 +149,12 @@ for i in range(int(sys.argv[1])):
         requests.append(request)
         responses.append(response)
 
-    # request =[]
-    # response = []
-    # requestTypes.append("who")
-    # request.append("")
-    # response.append(loginTokens[loginId]["name"])
-    # response.append(loginTokens[loginId]["surname"])
-    # response.append(loginTokens[loginId]["tel"])
-    # requests.append(request)
-    # responses.append(response)
+    requestTypes.append("getName")
+    
+    requests.append([''])
+    data = loginTokens[loginId]
+    responses.append([data["name"]])
+
     typeList.append(requestTypes)
     reqList.append(requests)
     resList.append(responses)
