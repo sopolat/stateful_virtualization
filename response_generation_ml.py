@@ -17,220 +17,197 @@ from sklearn.decomposition import PCA
 import json
 import sys
 import os
+from bs4 import BeautifulSoup
+from collections import defaultdict
 
 
-def pre_process_data(request_types_list, request_data_list, response_data_list):
-    '''
-    Mines needed information from the data
-    '''
-    unique_req_types = list(set(
-        [req_type for request_types in request_types_list
-         for req_type in request_types]))
+#global variables
+operation_to_be_trained = sys.argv[1]
+trace_size = int(sys.argv[2])
 
-    req_type_datapoint_dict = {}
-    for req_type in unique_req_types:
-        # part_datapoint = [0] * len(unique_req_types)
-        # part_datapoint[unique_req_types.index(req_type)] = -1
-        part_datapoint = [unique_req_types.index(req_type) + 1]
-        req_type_datapoint_dict[req_type] = part_datapoint
 
-    req_data_datapoint_dict = {}
-    max_req_data_len = 0
-    for req_type in unique_req_types:
-        unique_corresponding_req_data = get_unique_data(
-            req_type, request_types_list, request_data_list)
-        if len(unique_corresponding_req_data) > max_req_data_len:
-            max_req_data_len = len(unique_corresponding_req_data)
-        for data in unique_corresponding_req_data:
-            part_datapoint = [0] * len(unique_corresponding_req_data)
-            part_datapoint[unique_corresponding_req_data.index(data)] = -1
-            req_data_datapoint_dict[(req_type, str(data))] = part_datapoint
+req_data_dict = defaultdict(list)
+res_data_dict = defaultdict(list)
 
-    for value in req_data_datapoint_dict.values():
-        value += (max_req_data_len - len(value)) * [0]
 
-    res_data_datapoint_dict = {}
-    max_res_data_len = 0
-    for req_type in unique_req_types:
-        unique_corresponding_res_data = get_unique_data(
-            req_type, request_types_list, response_data_list)
-        unique_corresponding_res_data += [str([])]
-        if len(unique_corresponding_res_data) > max_res_data_len:
-            max_res_data_len = len(unique_corresponding_res_data)
-        for data in unique_corresponding_res_data:
-            part_datapoint = [0] * len(unique_corresponding_res_data)
-            part_datapoint[unique_corresponding_res_data.index(data)] = -1
-            res_data_datapoint_dict[(req_type, str(data))] = part_datapoint
+bank_file = open('bank_data.xml', 'rb')
+reformetted_file = open('reformetted_bank_data', 'w')
 
-    for value in res_data_datapoint_dict.values():
+bank_lines = bank_file.readlines()
+flag = 'req'
+account_dict = {}
+for line in bank_lines:
+    line = line.strip()
+    y=BeautifulSoup(line, 'lxml')
+    if flag == 'req':
+        if 'getAccount ' in line:
+            reformetted_file.write('getaccount ')
+            acc_id = y.accountid.text
+            reformetted_file.write(acc_id + ' / ')
+            if [acc_id] not in req_data_dict['getaccount']:
+                req_data_dict['getaccount'].append([acc_id])
+        if 'getNewToken ' in line:
+            reformetted_file.write('getnewtoken ')
+            reformetted_file.write('empty / ')  
+            if ['empty'] not in  req_data_dict['getnewtoken']:
+                req_data_dict['getnewtoken'].append(['empty'])
+        if 'depositMoney ' in line:
+            reformetted_file.write('deposit ')
+            reformetted_file.write(y.accountid.text + ' ' + y.amount.text + ' / ')   
+            if [y.accountid.text, y.amount.text] not in req_data_dict['deposit']:
+                req_data_dict['deposit'].append([y.accountid.text, y.amount.text])
+        if 'withdrawMoney ' in line:
+            reformetted_file.write('withdraw ')
+            reformetted_file.write(y.accountid.text + ' ' + y.amount.text + ' / ')  
+            if [y.accountid.text, y.amount.text] not in req_data_dict['withdraw']:
+                req_data_dict['withdraw'].append([y.accountid.text, y.amount.text])
+        if 'getTransactions ' in line:
+            reformetted_file.write('gettransactions ')
+            reformetted_file.write(y.accountid.text + ' / ') 
+            if [y.accountid.text] not in req_data_dict['gettransactions']:
+                req_data_dict['gettransactions'].append([y.accountid.text])
 
-        value += (max_res_data_len - len(value)) * [0]
+        flag = 'res'
+    else:
+        if 'getAccountResponse' in line:
+            try:
+                reformetted_file.write(account_dict[acc_id][0] + ' ' + account_dict[acc_id][1] + '\n')
+            except:
+                reformetted_file.write(y.fname.text + ' ' + y.lname.text + '\n')
+                account_dict[acc_id] = (y.fname.text, y.lname.text)
+            if acc_id not in res_data_dict['getaccount']:
+                res_data_dict['getaccount'].append([y.fname.text, y.lname.text])
+        if 'getNewTokenResponse' in line:
+            reformetted_file.write(y.returns.text + '\n')
+            if [y.returns.text] not in res_data_dict['getnewtoken']:
+                res_data_dict['getnewtoken'].append([y.returns.text])
+        if 'depositMoneyResponse' in line:
+            reformetted_file.write(y.returns.text + '\n')
+            if [y.returns.text] not in res_data_dict['deposit']:
+                res_data_dict['deposit'].append([y.returns.text])
+        if 'withdrawMoneyResponse' in line:
+            reformetted_file.write(y.returns.text + '\n')
+            if [y.returns.text] not in res_data_dict['withdraw']:
+                res_data_dict['withdraw'].append([y.returns.text])
+        if 'getTransactionsResponse' in line:
+            reformetted_file.write(y.transid.text + ' ' + y.fromaccount.text + ' ' + y.toaccount.text + '\n')
+            if [y.transid.text, y.fromaccount.text, y.toaccount.text] not in res_data_dict['gettransactions']:
+                res_data_dict['gettransactions'].append([y.transid.text, y.fromaccount.text, y.toaccount.text])
 
-    print req_type_datapoint_dict
-    print ''
-    print req_data_datapoint_dict
-    print ''
-    print res_data_datapoint_dict
-    return req_type_datapoint_dict, req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len, max_res_data_len
+
+        flag = 'req'
+
+def arrange_trace_window(event_list, param_list, resp_list, event, params, resp):
+    
+    event_list.append(event)
+    param_list.append(params)
+    resp_list.append(resp)
+
+    if len(event_list) > trace_size:
+        del event_list[0]
+
+    if len(param_list) > trace_size:
+        del param_list[0]
+
+    if len(resp_list) > trace_size:
+        del resp_list[0]
+
+    return event_list, param_list, resp_list
 
 
 fw = open('debug_datapoint', 'w')
 
+req_types = [
+        'getaccount',
+        'getnewtoken',
+        'deposit',
+        'withdraw',
+        'gettransactions']
 
-def one_hot_encoder(req_type_datapoint_dict,
-        req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len,
-        max_res_data_len, request_types, request_data, response_data):
-    '''
-    one-hot encoding function 
-    '''
-    encoded_data = []
-    # encoded_ouput = []
-    for j in range(len(request_types)):
-        req_type = request_types[j]
-        req_data = request_data[j]
-        res_data = response_data[j]
+most_diverse_req = 0
+most_diverse_res = 0
 
-        part_datapoint = req_type_datapoint_dict[req_type]
-        encoded_data += part_datapoint
+for req in req_types:
+    if len(res_data_dict[req]) > most_diverse_res:
+        most_diverse_res = len(res_data_dict[req])
 
-        # print 'REQ TYPE ' + str(j) + ':'
-        # print part_datapoint
-        fw.write(str(part_datapoint))
-        fw.write(str(len(encoded_data)))
-        fw.write('-')
-        # for data in req_data:
-        part_datapoint = req_data_datapoint_dict[(req_type, str(req_data))]
-        encoded_data += part_datapoint
-        # print 'REQ DATA ' + str(j)
-        # print part_datapoint
-
-        fw.write(str(part_datapoint))
-        fw.write(str(len(encoded_data)))
-        fw.write('-')
-
-        # print res_data
-        # for data in res_data:
-
-        part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
-        if j == len(request_types) - 1:
-            last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput =  req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
-        else:
-            encoded_data += part_datapoint
-
-        fw.write(str(part_datapoint))
-        fw.write(str(len(encoded_data)))
-        fw.write(' ')
-
-    return encoded_data, encoded_ouput
+    if len(req_data_dict[req]) > most_diverse_req:
+        most_diverse_req = len(req_data_dict[req])
 
 
-def output_encoder(unique_corresponding_req_data, request_data, data):
-    flat_request_data = [item for sublist in request_data for item in sublist]
-    # encoded_output = []
-    # test for only the first name. ignore phone number and surname
-    # data = res_data[0]
-    # for data in res_data[0]:
-    # print data
-    # print flat_request_data
-    # print unique_corresponding_req_data
-    if data in flat_request_data:
-        # part_datapoint = [0] * len(unique_corresponding_req_data)
-        # if data in unique_corresponding_req_data:
-        #     part_datapoint[unique_corresponding_req_data.index(data)] = 1
-        encoded_output = unique_corresponding_req_data.index(data)
-        # encoded_output = [0] * len(flat_request_data)
-        # encoded_output[flat_request_data.index(data)] = 1
+reformetted_file = open('reformetted_bank_data', 'rb')
 
-    return encoded_output
+datapoints = []
+outputs    = []
+event_list = []
+param_list = []
+resp_list  = []
+datapoints = []
+outputs = []
+next_event_flag = False
+while True:
+    line = reformetted_file.readline()
+    if not line: break  # EOF
+    # if 'trace' in line:
+    #     #remove last datapoint. becaues there is no next event
+    #     if next_event_flag:
+    #         del datapoints[-1]
+    #         next_event_flag = False
+    #     event_list = []
+    #     param_list = []
+    #     continue
+    line = line.strip()
+    line_splitted = line.split(' / ')
+    request_parts = line_splitted[0].split(' ')
+    op_type = request_parts[0]
+    params = request_parts[1:]
+    resp = line_splitted[1].split(' ')
 
 
-def get_unique_data(req_type, request_types_list, data_list):
-    '''
-    Get unique request or response data of a given request type.
-    '''
-    corresponding_data = []
-    for i in range(len(request_types_list)):
-        request_types = request_types_list[i]
-        data = data_list[i]
+    event_list, param_list, resp_list = arrange_trace_window(event_list, param_list, resp_list, op_type, params, resp)
 
-        indices = [k for k, item in enumerate(
-            request_types) if item == req_type]
+    if op_type == operation_to_be_trained and len(event_list)== trace_size:
+        datapoint = []
+        i = 0
+        for event, params, resp in zip(event_list, param_list, resp_list):
+            i += 1
+            event_encoded = [0] * len(req_types)
+            event_encoded[req_types.index(event)] = -1
+            datapoint += event_encoded
+            
+            part_datapoint = [0] * most_diverse_req #len(req_data_dict[event])
+            part_datapoint[req_data_dict[event].index(params)] = -1
+            datapoint += part_datapoint
+            print event
+            if i == trace_size:
+                output = [0] * len(res_data_dict[event])
+                output[res_data_dict[event].index(resp)] = -1
+            else:
+                part_datapoint = [0] * most_diverse_res #len(res_data_dict[event])
+                part_datapoint[res_data_dict[event].index(resp)] = -1
+                datapoint += part_datapoint
 
-        part_corresponding_data = [
-            data[index] for index in indices]
-        # part_corresponding_data_flat = [
-        #     item for sublist in part_corresponding_data for item in sublist]
-        corresponding_data += part_corresponding_data
+        fw.write(str(datapoint))
+        fw.write('---')
+        fw.write(str(output))
+        fw.write('\n')
 
-    if isinstance(corresponding_data[0], list):
-        # unique_corresponding_data = [list(x) for x in set(
-        #     tuple(x) for x in corresponding_data)]
-        # print corresponding_data
-        unique_corresponding_data = []
-        for x in corresponding_data:
-            if x not in unique_corresponding_data:
-                unique_corresponding_data.append(x)
-        print unique_corresponding_data
-    else:
-        unique_corresponding_data = list(set(corresponding_data))
-    # print unique_corresponding_data
-    return unique_corresponding_data
+        outputs.append(output)
+        datapoints.append(datapoint)
+
+total_length = len(datapoints)
 
 #######################################
 ############TRAINING PART##############
 #######################################
 
-# Crete data first
-cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1] + ' ' + sys.argv[2]
-os.system(cmd)
-
-traces = open('ml_service_traces', 'rb')
-data = json.load(traces)
-
-request_types_list = data['request_types']
-request_data_list = data['request_data']
-response_data_list = data['response_data']
-
-# unique_req_types = list(set(
-#     [req_type for request_types in request_types_list
-#      for req_type in request_types]))
-
-datapoints = []
-outputs = []
-total_length = len(request_types_list)
-max_len = 0
-
-req_type_datapoint_dict, req_data_datapoint_dict, \
-res_data_datapoint_dict, max_req_data_len, max_res_data_len = \
-pre_process_data(request_types_list, request_data_list, response_data_list)
-
-for i in range(total_length):
-    request_types = request_types_list[i]
-    request_data = request_data_list[i]
-    response_data = response_data_list[i]
-
-    datapoint, output = one_hot_encoder(req_type_datapoint_dict,
-                                        req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len,
-                                        max_res_data_len, request_types, request_data, response_data)
-
-    fw.write('\n')
-    # print len(datapoint)
-    # print len(output)
-    datapoints.append(datapoint)
-    outputs.append(output)
-    # print i
-
-    if len(datapoint) > max_len:
-        max_len = len(datapoint)
-fw.close()
 
 # datapoints = list(PCA(n_components=100).fit_transform(datapoints))
 # print 'data reduced (PCA)'
 
 names = [
-        #"Decision Tree", 
-         "Linear SVM",  # 
+        "Decision Tree", 
+         # "Linear SVM",   
          # "Neural Net", #"Nearest Neighbors", 
          # "RBF SVM", 
          # "Random Forest", #"Naive Bayes", "QDA"
@@ -239,8 +216,8 @@ names = [
          ]
 classifiers = [
     # KNeighborsClassifier(3),
-    # DecisionTreeClassifier(max_depth=5),
-    SVC(kernel="linear", C=0.025),
+    DecisionTreeClassifier(max_depth=50),
+    # SVC(kernel="linear", C=0.025),
     # SVC(gamma=2, C=1),
     # MLPClassifier(alpha=1),
     # GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
