@@ -113,8 +113,8 @@ def one_hot_encoder(req_type_datapoint_dict,
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
-            last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput =  req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
+            # last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
+            encoded_ouput = part_datapoint # req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
@@ -173,8 +173,18 @@ def get_unique_data(req_type, request_types_list, data_list):
                 unique_corresponding_data.append(x)
         print unique_corresponding_data
     else:
+        rem_indices = []
+        for cor in corresponding_data:
+            if isinstance(cor, list):
+                indices = [i for i, elem in enumerate(corresponding_data) if elem == cor]
+                if not set(indices).issubset(rem_indices):
+                    rem_indices += indices
+                
+                # corresponding_data.remove(cor)
+        rem_indices = sorted(rem_indices, reverse=True)
+        for r in rem_indices:
+            del corresponding_data[r]
         unique_corresponding_data = list(set(corresponding_data))
-    # print unique_corresponding_data
     return unique_corresponding_data
 
 #######################################
@@ -182,10 +192,10 @@ def get_unique_data(req_type, request_types_list, data_list):
 #######################################
 
 # Crete data first
-cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1] + ' ' + sys.argv[2]
-os.system(cmd)
+# cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1] + ' ' + sys.argv[2]
+# os.system(cmd)
 
-traces = open('ml_service_traces', 'rb')
+traces = open('QX_reformatted_300', 'rb')
 data = json.load(traces)
 
 request_types_list = data['request_types']
@@ -229,17 +239,18 @@ fw.close()
 # print 'data reduced (PCA)'
 
 names = [
-        #"Decision Tree", 
-         "Linear SVM",  # 
-         # "Neural Net", #"Nearest Neighbors", 
+         # "Nearest Neighbors",
+         "Decision Tree", 
+         "Linear SVM",  
          # "RBF SVM", 
+         # "Neural Net",
          # "Random Forest", #"Naive Bayes", "QDA"
          # "AdaBoost",
          # "Gaussian Process"
          ]
 classifiers = [
     # KNeighborsClassifier(3),
-    # DecisionTreeClassifier(max_depth=5),
+    DecisionTreeClassifier(max_depth=15),
     SVC(kernel="linear", C=0.025),
     # SVC(gamma=2, C=1),
     # MLPClassifier(alpha=1),
@@ -262,7 +273,7 @@ for name, clf in zip(names, classifiers):
 
     print name
     # Read cross val size from the user input
-    CROSS_VAL_SIZE = int(sys.argv[3])
+    CROSS_VAL_SIZE = int(sys.argv[1])
     outfile = file('outfile_ml' + name, 'w')
     outfile.write('Out Predicted')
     outfile.write('\n')

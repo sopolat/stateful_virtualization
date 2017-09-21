@@ -19,6 +19,7 @@ for i in range(number_of_traces):
     id_counter = 1
     len_list = 0
     services = []
+    last_set = ''
     for j in range(trace_size-1):
         rand_number = random.randint(0, 3)
 
@@ -70,7 +71,7 @@ for i in range(number_of_traces):
             payload.append(delete_id)
             request_data.append(payload)
 
-        if rand_number == 2:
+        if rand_number == 4:
             request_types.append('service/list/')
 
             payload = []
@@ -87,11 +88,19 @@ for i in range(number_of_traces):
             request_types.append('service/set/')
 
             payload = []
-            payload.append(random.choice(name_list))
+            last_set = random.choice(name_list)
+            payload.append(last_set)
 
             request_data.append(payload)  
             response_data.append(['OK'])
 
+        if rand_number == 2:
+            request_types.append('service/get/')
+            payload = []
+            payload.append("")
+
+            request_data.append(payload)  
+            response_data.append([last_set])
 
     if operation_to_be_trained == 'add':
 
