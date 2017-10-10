@@ -53,8 +53,8 @@ class CharacterTable(object):
 #                   "09": "EYL", "10":"EKI", "11":"KAS", "12":"ARA"}
 #     return months_map.get(month, "OCA")
 
-def read_stateful_user_data():
-    fr = open("lstm_format_data_file", 'r')
+def read_data():
+    fr = open("LDTP_lstm_format", 'r')
     max_len_req = 0
     max_len_res = 0
     requests = []
@@ -113,7 +113,7 @@ def read_stateful_user_data():
 questions = []
 expected = []
 
-chars, MAXLEN_REQ, MAXLEN_RES, questions, expected = read_stateful_user_data()
+chars, MAXLEN_REQ, MAXLEN_RES, questions, expected = read_data()
 chars += '#'
 print (chars)
 
