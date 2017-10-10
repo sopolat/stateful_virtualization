@@ -47,11 +47,11 @@ class CharacterTable(object):
 
 
 
-def mapper(month):
-    months_map = {"01": 'OCA', "02": 'SUB', "03": "MAR", "04": "NIS",
-                  "05": "MAY", "06": "HAZ", "07": "AGU", "08": "TEM",
-                  "09": "EYL", "10":"EKI", "11":"KAS", "12":"ARA"}
-    return months_map.get(month, "OCA")
+# def mapper(month):
+#     months_map = {"01": 'OCA', "02": 'SUB', "03": "MAR", "04": "NIS",
+#                   "05": "MAY", "06": "HAZ", "07": "AGU", "08": "TEM",
+#                   "09": "EYL", "10":"EKI", "11":"KAS", "12":"ARA"}
+#     return months_map.get(month, "OCA")
 
 def read_stateful_user_data():
     fr = open("lstm_format_data_file", 'r')
@@ -76,46 +76,42 @@ def read_stateful_user_data():
 
     return chars, max_len_req, max_len_res, requests, responses
 
-def read_bank_data():
-    fr = open("bank_data.xml", 'r')
-    max_len = 0
-    requests = []
-    responses = []
-    while True:
-        line1 = fr.readline()
-        line2 = fr.readline()
-        #190 is chosen based on the data
-        if len(line1) > 190 or len(line2) >190:
-            continue
-        if len(line1) > max_len:
-            max_len = len(line1)
-        if len(line2) > max_len:
-            max_len = len(line2)
-        if not line1 or not line2: break  # EOF
-        requests.append(line1.strip().upper())
-        responses.append(line2.strip().upper())
-    return max_len, requests, responses
+# def read_bank_data():
+#     fr = open("bank_data.xml", 'r')
+#     max_len = 0
+#     requests = []
+#     responses = []
+#     while True:
+#         line1 = fr.readline()
+#         line2 = fr.readline()
+#         #190 is chosen based on the data
+#         if len(line1) > 190 or len(line2) >190:
+#             continue
+#         if len(line1) > max_len:
+#             max_len = len(line1)
+#         if len(line2) > max_len:
+#             max_len = len(line2)
+#         if not line1 or not line2: break  # EOF
+#         requests.append(line1.strip().upper())
+#         responses.append(line2.strip().upper())
+#     return max_len, requests, responses
 
 
-def create_data():
-    num = np.random.randint(1, 100)
-    tk = "TK%s" % np.random.randint(3, 400)
-    th = "%s%s" % (np.random.randint(1, 30), mapper(np.random.randint(1, 12)))
-    st = "%s" % SG("[ABCDEFGHIJKLM]{3}").render()
-    end = "%s" % SG("[ABCDEFGHIJKL]{3}").render()
+# def create_data():
+#     num = np.random.randint(1, 100)
+#     tk = "TK%s" % np.random.randint(3, 400)
+#     th = "%s%s" % (np.random.randint(1, 30), mapper(np.random.randint(1, 12)))
+#     st = "%s" % SG("[ABCDEFGHIJKLM]{3}").render()
+#     end = "%s" % SG("[ABCDEFGHIJKL]{3}").render()
 
-    a = "{0}{1}I{2}{3}{4}".format(num, tk, th, st, end)
-    b = "1 {1} I {2} {4}{3}".format(num, tk, th, st, end)
-    return a, b
+#     a = "{0}{1}I{2}{3}{4}".format(num, tk, th, st, end)
+#     b = "1 {1} I {2} {4}{3}".format(num, tk, th, st, end)
+#     return a, b
 
 # a, b = create_data()
 
-
-print('Generating data...')
-
 questions = []
 expected = []
-# MAXLEN, questions, expected = read_bank_data()
 
 chars, MAXLEN_REQ, MAXLEN_RES, questions, expected = read_stateful_user_data()
 chars += '#'
@@ -261,4 +257,4 @@ for iteration in range(1, LSTM_ITERATION):
     print('------------')
 
     # time.sleep(2)
-model.save('stateful_user_data_new_format.h5')
+model.save('thy_LDTP_.h5')
