@@ -15,7 +15,7 @@ new_request_data_list = []
 new_response_data_list= []
 
 # fw = open('debug_file', 'w')
-for request_types in request_types_list[:3000]:
+for request_types in request_types_list[:1000]:
 	upper_index = request_types_list.index(request_types)
 	request_data = request_data_list[upper_index]
 	response_data = response_data_list[upper_index]
@@ -36,7 +36,7 @@ for request_types in request_types_list[:3000]:
 		new_response_data_list.append(new_response_data)
 
 OPERATION_TO_BE_TRAINED = OPERATION_TO_BE_TRAINED.replace('/', '?')
-file = open(OPERATION_TO_BE_TRAINED + '_reformatted_3000', 'w')
+file = open(OPERATION_TO_BE_TRAINED + '_reformatted_1000', 'w')
 file.write('{')
 file.write('\n\"request_types\" : ')
 file.write(str(new_request_types_list).replace("\'", "\"").replace('u',''))
