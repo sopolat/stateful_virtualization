@@ -1,6 +1,6 @@
 import json
 
-traces = open('5.. LDTP _reformatted_300', 'rb')
+traces = open('5.. LDTP _reformatted_1000', 'rb')
 data = json.load(traces)
 
 request_types_list = data['request_types']
@@ -17,16 +17,25 @@ for request_types in request_types_list:
 	for i in range(len(request_types)):
 		question += request_types[i]
 		if isinstance(request_data[i], list):
+			temp_var = ''
 			for req_data in request_data[i]:
-				question += req_data
+				temp_var += req_data
+			if len(temp_var) > 100:
+			    temp_var = temp_var[:100]
+			question += temp_var
 		else:
-			question += request_data[i]	
+			if len(request_data[i]) > 100:
+			    question += request_data[i][:100]
+			else:
+			    question += request_data[i]	
 		if isinstance(response_data[i], list):
 			for res_data in response_data[i]:
 				answer += res_data
 		else:
 			answer    = response_data[i]
-
+		if len(answer) > 100:
+		    answer = answer[:100]
+		
 		fw.write(question)
 		fw.write('\n')
 		fw.write(answer)

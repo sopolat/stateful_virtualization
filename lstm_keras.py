@@ -191,7 +191,7 @@ print(y_val.shape)
 # Try replacing GRU, or SimpleRNN.
 RNN = layers.LSTM
 HIDDEN_SIZE = 128
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 LAYERS = 2
 LSTM_ITERATION = 1000
 
