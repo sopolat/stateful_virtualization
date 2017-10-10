@@ -89,7 +89,7 @@ def dataParse3(traces):
     newdata['request_types'] = []
     newdata['request_data'] = []
     newdata['response_data'] = []
-    
+    fw = open('ldtp_debug', 'w')
     for req,res in zip(reqs, ress):
         type2=[]
         req2=[]
@@ -101,13 +101,11 @@ def dataParse3(traces):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if(a == "BSIA5005BW/SU"):
+            elif(a == "BSIA5005BW/SU"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if((a[0] =="0")and a!="0A"):
+            elif((a[0] =="0")and a!="0A"):
                 dumpa=[]
                 for tk in a.split("|"):
                     index=3
@@ -121,86 +119,73 @@ def dataParse3(traces):
                 type2.append("ticket")
                 req2.append(dumpa)
                 res2.append(b.split())
-                continue
-            if(a == "*R"):
+            elif(a == "*R"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b.split())
-                continue
-            if(a[0] == "-"):
+            elif(a[0] == "-"):
                 type2.append("-")
                 req2.append(a[1:])
                 res2.append(b[1:].split())
-                continue
-            if(a == "*A"):
+            elif(a == "*A"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b.split())
-                continue
-            if(a[0] == "*"):
+            elif(a[0] == "*"):
                 type2.append("*")
                 req2.append(a.split('*'))
                 res2.append(b.split())
-                continue
-            if(a[0:3] == "BMS"):
+            elif(a[0:3] == "BMS"):
                 type2.append(a[0:3])
                 req2.append(a[3:])
                 res2.append(b)
-                continue
-            if(a[0:3] == "FQP"):
+            elif(a[0:3] == "FQP"):
+                # fw.write(a)
+                # fw.write('\n')
+                # fw.write(str(re.split("-[0-9]",a[3:])))
+                # fw.write('\n')
+                # fw.write(b)
+                # fw.write('\n')
                 type2.append(a)
                 req2.append(re.split("-[0-9]",a[3:]))
                 res2.append(b)
-                continue
-            if(a[0:9]  == "5.. LDTP "):
+            elif(a[0:9]  == "5.. LDTP "):
                 type2.append(a[0:9])
                 req2.append(a[9:])
-                res2.append(b)
-                continue
-            if(a[0:5] == "6ITT-"):
+                res2.append(b[:-2])
+            elif(a[0:5] == "6ITT-"):
                 type2.append("6ITT")
                 req2.append(a[5:])
                 res2.append(b.split('-'))
-                continue
-            if(a == "CX"):
+            elif(a == "CX"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if(a.split("*")[0] == "SC"):
+            elif(a.split("*")[0] == "SC"):
                 type2.append(a.split("*")[0])
                 req2.append(a.split("*")[1])
                 res2.append(b)
-                continue
-            if(a == "4FGMIL"):
+            elif(a == "4FGMIL"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if(a[0] == "4"):
+            elif(a[0] == "4"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if(a[0:3] == "FZS"):
+            elif(a[0:3] == "FZS"):
                 type2.append("FZS")
-                req2.append(a[3:-3])
-                req2.append(a[-3:])
+                req2.append([a[3:-3], a[-3:]])
                 res2.append(b)
-                continue
-            if(a == "SOF"):
+            elif(a == "SOF"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            if(a == "0A"):
+            elif(a == "0A"):
                 type2.append(a)
                 req2.append("")
                 res2.append(b)
-                continue
-            print(a)
-            print(b)
-            eror()
+
         newdata['request_types'].append(type2)
         newdata['request_data'].append(req2)
         newdata['response_data'].append(res2)

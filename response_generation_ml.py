@@ -3,7 +3,7 @@
 Response generation with machine learning. Data preperation.
 '''
 import numpy as np
-# from sklearn.neural_network import MLPClassifier, MLPRegressor
+from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.gaussian_process import GaussianProcessClassifier
@@ -39,6 +39,7 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
     for req_type in unique_req_types:
         unique_corresponding_req_data = get_unique_data(
             req_type, request_types_list, request_data_list)
+
         if len(unique_corresponding_req_data) > max_req_data_len:
             max_req_data_len = len(unique_corresponding_req_data)
         for data in unique_corresponding_req_data:
@@ -48,12 +49,12 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
 
     for value in req_data_datapoint_dict.values():
         value += (max_req_data_len - len(value)) * [0]
-
     res_data_datapoint_dict = {}
     max_res_data_len = 0
     for req_type in unique_req_types:
         unique_corresponding_res_data = get_unique_data(
             req_type, request_types_list, response_data_list)
+
         unique_corresponding_res_data += [str([])]
         if len(unique_corresponding_res_data) > max_res_data_len:
             max_res_data_len = len(unique_corresponding_res_data)
@@ -66,11 +67,11 @@ def pre_process_data(request_types_list, request_data_list, response_data_list):
 
         value += (max_res_data_len - len(value)) * [0]
 
-    print req_type_datapoint_dict
-    print ''
-    print req_data_datapoint_dict
-    print ''
-    print res_data_datapoint_dict
+    # print req_type_datapoint_dict
+    # print ''
+    # print req_data_datapoint_dict
+    # print ''
+    # print res_data_datapoint_dict
     return req_type_datapoint_dict, req_data_datapoint_dict, res_data_datapoint_dict, max_req_data_len, max_res_data_len
 
 
@@ -108,13 +109,11 @@ def one_hot_encoder(req_type_datapoint_dict,
         fw.write(str(len(encoded_data)))
         fw.write('-')
 
-        # print res_data
-        # for data in res_data:
 
         part_datapoint = res_data_datapoint_dict[(req_type, str(res_data))]
         if j == len(request_types) - 1:
             # last_set = len(request_types) - 1 - request_types[::-1].index('service/set/')
-            encoded_ouput = part_datapoint # req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
+            encoded_ouput = part_datapoint.index(-1) # req_data_datapoint_dict[('service/set/', str(request_data[last_set]))] #last_set #request_types.count('service/add/')  #len(res_data) #part_datapoint[0]
         else:
             encoded_data += part_datapoint
 
@@ -127,13 +126,7 @@ def one_hot_encoder(req_type_datapoint_dict,
 
 def output_encoder(unique_corresponding_req_data, request_data, data):
     flat_request_data = [item for sublist in request_data for item in sublist]
-    # encoded_output = []
-    # test for only the first name. ignore phone number and surname
-    # data = res_data[0]
-    # for data in res_data[0]:
-    # print data
-    # print flat_request_data
-    # print unique_corresponding_req_data
+
     if data in flat_request_data:
         # part_datapoint = [0] * len(unique_corresponding_req_data)
         # if data in unique_corresponding_req_data:
@@ -171,7 +164,7 @@ def get_unique_data(req_type, request_types_list, data_list):
         for x in corresponding_data:
             if x not in unique_corresponding_data:
                 unique_corresponding_data.append(x)
-        print unique_corresponding_data
+        # print unique_corresponding_data
     else:
         rem_indices = []
         for cor in corresponding_data:
@@ -195,7 +188,7 @@ def get_unique_data(req_type, request_types_list, data_list):
 # cmd = 'python2 data_creator_add_delete.py ' + sys.argv[1] + ' ' + sys.argv[2]
 # os.system(cmd)
 
-traces = open('QX_reformatted_300', 'rb')
+traces = open('5.. LDTP _reformatted_300', 'rb')
 data = json.load(traces)
 
 request_types_list = data['request_types']
@@ -243,20 +236,20 @@ names = [
          "Decision Tree", 
          "Linear SVM",  
          # "RBF SVM", 
-         # "Neural Net",
+         "Neural Net",
          # "Random Forest", #"Naive Bayes", "QDA"
-         # "AdaBoost",
+         "AdaBoost",
          # "Gaussian Process"
          ]
 classifiers = [
     # KNeighborsClassifier(3),
-    DecisionTreeClassifier(max_depth=15),
+    DecisionTreeClassifier(max_depth=20),
     SVC(kernel="linear", C=0.025),
     # SVC(gamma=2, C=1),
-    # MLPClassifier(alpha=1),
+    MLPClassifier(alpha=1),
     # GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
     # RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-    # AdaBoostClassifier(),
+    AdaBoostClassifier(),
     # GaussianNB(),
     # QuadraticDiscriminantAnalysis()
     ]
